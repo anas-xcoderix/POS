@@ -1,4 +1,4 @@
-@php $title = __('modules.settings'); @endphp
+@php $title = 'Business Settings'; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">
@@ -32,6 +32,16 @@
     </div>
 
     <div class="erp-card p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900">{{ __('pages.legacy_import.title') }}</h3>
+                <p class="mt-1 text-sm text-slate-600">{{ __('pages.legacy_import.subtitle') }}</p>
+            </div>
+            <a href="{{ route('legacy-import.index') }}" class="erp-btn-secondary text-sm">{{ __('pages.legacy_import.run_import') }} →</a>
+        </div>
+    </div>
+
+    <div class="erp-card p-6">
         <h3 class="mb-4 text-lg font-bold text-slate-900">General Ledger (Auto-Post)</h3>
         <form method="POST" action="{{ route('settings.update') }}" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             @csrf @method('PUT')
@@ -59,7 +69,7 @@
             @csrf
             <x-ui.form-field label="Rule Name" name="name" required />
             <x-ui.form-field label="Rule Type" name="rule_type" type="select" required>
-                <option value="customer">{{ __('ui.customer') }}</option>
+                <option value="customer">Customer</option>
                 <option value="brand">Brand</option>
                 <option value="customer_type">Customer Type</option>
             </x-ui.form-field>

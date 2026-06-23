@@ -126,6 +126,13 @@ return [
             'trust_server_certificate' => env('LEGACY_DB_TRUST_CERT', 'true'),
         ],
 
+        'legacy_sqlite' => [
+            'driver' => 'sqlite',
+            'database' => env('LEGACY_SQLITE_PATH', database_path('legacy_mock.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+        ],
+
     ],
 
     /*

@@ -16,6 +16,7 @@ use App\Http\Controllers\PartController;
 use App\Http\Controllers\PartImportController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\LegacyImportController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseInvoiceController;
@@ -204,6 +205,8 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
 
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('settings/legacy-import', [LegacyImportController::class, 'index'])->name('legacy-import.index');
+    Route::post('settings/legacy-import/run', [LegacyImportController::class, 'run'])->name('legacy-import.run');
     Route::post('discount-rules', [SettingsController::class, 'storeDiscountRule'])->name('discount-rules.store');
     Route::delete('discount-rules/{discountRule}', [SettingsController::class, 'destroyDiscountRule'])->name('discount-rules.destroy');
 

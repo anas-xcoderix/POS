@@ -2,190 +2,158 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Brand;
-use App\Models\Customer;
-use App\Models\Part;
-use App\Models\Vendor;
+use App\Models\LegacyImportRun;
+use App\Services\Legacy\LegacyIdMapService;
+use App\Services\Legacy\LegacyImportService;
+use App\Services\Legacy\LegacySchemaReader;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class ImportLegacyDatabase extends Command
 {
     protected $signature = 'iaapco:import-legacy
-                            {--connection=legacy_sqlsrv : Database connection name}
-                            {--dry-run : List tables only without importing}
-                            {--masters : Import brands, parts, customers, vendors from legacy tables}';
+                            {--connection=legacy_sqlsrv : Legacy DB connection (legacy_sqlsrv or legacy_sqlite)}
+                            {--dry-run : List legacy tables only}
+                            {--inspect : Show entity mapping and column match}
+                            {--phase=all : Import phase: organization|masters|inventory|sales|purchase|finance|workshop|hr|all}
+                            {--entity= : Import single entity key from config/legacy_import.php}
+                            {--limit=0 : Max rows per table (0 = unlimited)}
+                            {--chunk=500 : Chunk size when reading legacy tables}
+                            {--skip-existing : Skip rows already in legacy_import_maps}
+                            {--fresh-maps : Clear ID maps before import}
+                            {--force : Skip confirmation on full import}';
 
-    protected $description = 'Import data from legacy IAAPCO SQL Server database (InventoryHas)';
+    protected $description = 'Import data from legacy IAAPCO SQL Server (InventoryHas) into Laravel ERP';
 
-    /** @var array<string, string> Legacy table => Laravel model table */
-    protected array $masterMappings = [
-        'Brand' => 'brands',
-        'Brands' => 'brands',
-        'tblBrand' => 'brands',
-        'Part' => 'parts',
-        'Parts' => 'parts',
-        'tblPart' => 'parts',
-        'Customer' => 'customers',
-        'Customers' => 'customers',
-        'tblCustomer' => 'customers',
-        'Vendor' => 'vendors',
-        'Vendors' => 'vendors',
-        'tblVendor' => 'vendors',
-    ];
-
-    public function handle(): int
+    public function handle(LegacyImportService $import, LegacySchemaReader $schema, LegacyIdMapService $maps): int
     {
         $connection = $this->option('connection');
 
         if (! config("database.connections.{$connection}")) {
-            $this->error("Connection [{$connection}] not configured. Add LEGACY_DB_* vars to .env.");
+            $this->error("Connection [{$connection}] is not configured.");
 
             return self::FAILURE;
         }
 
+        $import->setConnection($connection);
+        $schema->setConnection($connection);
+        $import->onLog(fn (string $msg) => $this->line($msg));
+
         try {
-            $tables = collect(DB::connection($connection)->select(
-                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME"
-            ))->pluck('TABLE_NAME');
+            $tables = $import->listTables();
         } catch (\Throwable $e) {
             $this->error('Cannot connect to legacy database: '.$e->getMessage());
-            $this->line('');
-            $this->line('Configure in .env:');
+            $this->newLine();
+            $this->warn('Configure SQL Server in .env:');
             $this->line('  LEGACY_DB_HOST=JS-SERVER');
             $this->line('  LEGACY_DB_DATABASE=InventoryHas');
             $this->line('  LEGACY_DB_USERNAME=sa');
             $this->line('  LEGACY_DB_PASSWORD=your_password');
-            $this->line('');
-            $this->line('Requires PHP sqlsrv extension. Run: php artisan iaapco:import-legacy --dry-run');
+            $this->newLine();
+            $this->info('For local testing without SQL Server:');
+            $this->line('  php artisan iaapco:legacy-mock-setup');
+            $this->line('  php artisan iaapco:import-legacy --connection=legacy_sqlite --phase=all');
 
             return self::FAILURE;
         }
 
-        $this->info('Found '.$tables->count().' tables on legacy database.');
+        $this->info("Connected to [{$connection}] — {$tables->count()} tables found.");
 
         if ($this->option('dry-run')) {
             foreach ($tables as $name) {
-                $mapped = $this->masterMappings[$name] ?? null;
-                $this->line('  - '.$name.($mapped ? " → {$mapped}" : ''));
+                $this->line('  - '.$name);
             }
 
             return self::SUCCESS;
         }
 
-        if ($this->option('masters')) {
-            return $this->importMasters($connection, $tables);
+        if ($this->option('inspect')) {
+            return $this->renderInspect($import->inspect());
         }
 
-        $this->warn('Use --dry-run to list tables, or --masters to import master data.');
-        $this->line('Customize column mappings in app/Console/Commands/ImportLegacyDatabase.php');
+        $phase = $this->option('phase') ?? 'all';
+        $entity = $this->option('entity');
+
+        if ($this->option('fresh-maps')) {
+            $maps->clear();
+            $this->warn('Cleared legacy ID maps.');
+        }
+
+        if ($phase === 'all' && ! $entity && ! $this->option('force')) {
+            if (! $this->confirm('Import ALL phases from legacy database into MySQL? Existing mapped records will be updated.', false)) {
+                $this->info('Cancelled.');
+
+                return self::SUCCESS;
+            }
+        }
+
+        $options = [
+            'limit' => (int) $this->option('limit'),
+            'chunk' => (int) $this->option('chunk'),
+            'skip_existing' => (bool) $this->option('skip-existing'),
+        ];
+
+        $this->info('Starting legacy import...');
+
+        $run = LegacyImportRun::create([
+            'connection' => $connection,
+            'phase' => $entity ?: $phase,
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        try {
+            if ($entity) {
+                $stats = $import->importEntity($entity, $options);
+            } else {
+                $stats = $import->run($phase, $options);
+            }
+        } catch (\Throwable $e) {
+            $run->update([
+                'status' => 'failed',
+                'message' => $e->getMessage(),
+                'finished_at' => now(),
+            ]);
+            $this->error('Import failed: '.$e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $run->markFinished('completed', $stats);
+
+        $this->newLine();
+        $this->table(
+            ['Metric', 'Count'],
+            [
+                ['Processed', $stats->processed],
+                ['Imported', $stats->imported],
+                ['Skipped', $stats->skipped],
+                ['Failed', $stats->failed],
+            ]
+        );
+
+        if ($stats->failed > 0) {
+            $this->warn('Some rows failed — re-run with --inspect and check column mappings in config/legacy_import.php');
+        } else {
+            $this->info('Legacy import completed.');
+        }
 
         return self::SUCCESS;
     }
 
-    protected function importMasters(string $connection, $tables): int
+    protected function renderInspect(array $inspect): int
     {
-        $legacy = DB::connection($connection);
-        $imported = 0;
-
-        foreach ($this->masterMappings as $legacyTable => $target) {
-            if (! $tables->contains($legacyTable)) {
-                continue;
-            }
-
-            $rows = $legacy->table($legacyTable)->limit(5000)->get();
-            $this->info("Importing {$rows->count()} rows from {$legacyTable} → {$target}");
-
-            foreach ($rows as $row) {
-                $data = (array) $row;
-                match ($target) {
-                    'brands' => $this->importBrand($data),
-                    'parts' => $this->importPart($data),
-                    'customers' => $this->importCustomer($data),
-                    'vendors' => $this->importVendor($data),
-                    default => null,
-                };
-                $imported++;
+        foreach ($inspect as $entity => $info) {
+            $this->newLine();
+            $this->info(strtoupper($entity).' → '.($info['target'] ?? '?'));
+            if ($info['legacy_table']) {
+                $this->line('  Legacy table: '.$info['legacy_table']);
+                $this->line('  Columns: '.implode(', ', array_slice($info['columns'], 0, 12)).(count($info['columns']) > 12 ? '...' : ''));
+            } else {
+                $this->warn('  Legacy table NOT FOUND. Candidates: '.implode(', ', $info['legacy_tables']));
             }
         }
-
-        $this->info("Processed {$imported} legacy rows.");
 
         return self::SUCCESS;
-    }
-
-    protected function importBrand(array $row): void
-    {
-        $name = $row['Name'] ?? $row['BrandName'] ?? $row['name'] ?? null;
-        if (! $name) {
-            return;
-        }
-
-        Brand::firstOrCreate(
-            ['code' => $row['Code'] ?? $row['code'] ?? strtoupper(substr($name, 0, 10))],
-            ['name' => $name, 'is_active' => true]
-        );
-    }
-
-    protected function importPart(array $row): void
-    {
-        $partNo = $row['PartNo'] ?? $row['PartNumber'] ?? $row['part_number'] ?? null;
-        if (! $partNo) {
-            return;
-        }
-
-        $brand = Brand::first();
-        if (! $brand) {
-            $brand = Brand::create(['code' => 'DEF', 'name' => 'Default', 'is_active' => true]);
-        }
-
-        Part::updateOrCreate(
-            ['part_number' => $partNo],
-            [
-                'brand_id' => $brand->id,
-                'description_en' => $row['Description'] ?? $row['Desc'] ?? $partNo,
-                'oem_no' => $row['OEMNo'] ?? $row['oem_no'] ?? null,
-                'barcode' => $row['Barcode'] ?? $row['barcode'] ?? null,
-                'list_price' => (float) ($row['ListPrice'] ?? $row['list_price'] ?? 0),
-                'cost_price' => (float) ($row['CostPrice'] ?? $row['cost_price'] ?? 0),
-                'is_active' => true,
-            ]
-        );
-    }
-
-    protected function importCustomer(array $row): void
-    {
-        $name = $row['Name'] ?? $row['CustomerName'] ?? $row['name'] ?? null;
-        if (! $name) {
-            return;
-        }
-
-        Customer::updateOrCreate(
-            ['code' => $row['Code'] ?? $row['code'] ?? 'C'.substr(md5($name), 0, 8)],
-            [
-                'name' => $name,
-                'phone' => $row['Phone'] ?? $row['phone'] ?? null,
-                'email' => $row['Email'] ?? $row['email'] ?? null,
-                'is_active' => true,
-            ]
-        );
-    }
-
-    protected function importVendor(array $row): void
-    {
-        $name = $row['Name'] ?? $row['VendorName'] ?? $row['name'] ?? null;
-        if (! $name) {
-            return;
-        }
-
-        Vendor::updateOrCreate(
-            ['code' => $row['Code'] ?? $row['code'] ?? 'V'.substr(md5($name), 0, 8)],
-            [
-                'name' => $name,
-                'phone' => $row['Phone'] ?? $row['phone'] ?? null,
-                'email' => $row['Email'] ?? $row['email'] ?? null,
-                'is_active' => true,
-            ]
-        );
     }
 }

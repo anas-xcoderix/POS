@@ -152,6 +152,8 @@ class PermissionService
             'locale.switch' => 'dashboard',
             'settings.index' => 'settings',
             'settings.update' => 'settings',
+            'legacy-import.index' => 'settings',
+            'legacy-import.run' => 'settings',
             'discount-rules.store' => 'settings',
             'discount-rules.destroy' => 'settings',
             'users.index' => 'users',
