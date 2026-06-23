@@ -46,6 +46,7 @@ return [
         'cannot_delete_base' => 'Cannot delete the base currency.',
     ],
     'user' => [
+        'created' => 'User created successfully.',
         'updated' => 'User updated.',
         'permissions_updated' => 'User permissions updated.',
         'cannot_remove_own_admin' => 'You cannot remove your own admin role.',

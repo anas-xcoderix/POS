@@ -46,6 +46,7 @@ return [
         'cannot_delete_base' => 'لا يمكن حذف العملة الأساسية.',
     ],
     'user' => [
+        'created' => 'تم إنشاء المستخدم بنجاح.',
         'updated' => 'تم تحديث المستخدم.',
         'permissions_updated' => 'تم تحديث صلاحيات المستخدم.',
         'cannot_remove_own_admin' => 'لا يمكنك إزالة دور المدير عن نفسك.',

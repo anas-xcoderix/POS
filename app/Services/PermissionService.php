@@ -157,6 +157,7 @@ class PermissionService
             'discount-rules.store' => 'settings',
             'discount-rules.destroy' => 'settings',
             'users.index' => 'users',
+            'users.store' => 'users',
             'users.update' => 'users',
             'pricing.resolve' => 'sales',
             'documents.sales-invoice.pdf' => 'sales',

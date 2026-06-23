@@ -167,6 +167,13 @@ return [
 
     'users' => [
         'subtitle' => 'Manage user roles, branch access, discount authority, and granular permissions.',
+        'add_user' => 'Add User',
+        'create_user' => 'Create User',
+        'name' => 'Full Name',
+        'email' => 'Email',
+        'password' => 'Password',
+        'password_confirm' => 'Confirm Password',
+        'no_users' => 'No users found.',
         'edit_user' => 'Edit User',
         'granular_permissions' => 'Granular Permissions',
         'max_discount_pct' => 'Max Discount %',

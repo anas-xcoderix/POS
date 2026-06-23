@@ -211,6 +211,7 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::delete('discount-rules/{discountRule}', [SettingsController::class, 'destroyDiscountRule'])->name('discount-rules.destroy');
 
     Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
+    Route::post('users', [UserManagementController::class, 'store'])->name('users.store');
     Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
     Route::put('users/{user}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.permissions.update');
 
