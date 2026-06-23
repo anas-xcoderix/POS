@@ -1,4 +1,4 @@
-@php $title = 'Quotation '.$quotation->quotation_no; @endphp
+@php $title = __('modules.quotation').' '.$quotation->quotation_no; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">

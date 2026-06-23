@@ -1,12 +1,13 @@
 @include('components.master-crud', [
-    'title' => 'Locations',
+    'title' => __('modules.locations'),
     'resource' => 'locations',
-    'createLabel' => 'Add Location',
+    'createLabel' => __('modules.add_location'),
     'columns' => [
-        ['label' => 'Branch', 'relation' => 'branch', 'field' => 'name'],
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Bin', 'field' => 'bin'],
+        ['label' => __('ui.branch'), 'relation' => 'branch', 'field' => 'name'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.location_type'), 'field' => 'location_type'],
+        ['label' => __('ui.bin'), 'field' => 'bin'],
     ],
     'formFields' => view('locations._form', ['branches' => $branches])->render(),
 ])

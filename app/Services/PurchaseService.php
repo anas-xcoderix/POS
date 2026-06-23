@@ -6,8 +6,11 @@ use App\Models\PurchaseInvoice;
 use App\Models\PurchaseInvoiceItem;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\PurchaseReturn;
+use App\Models\PurchaseReturnItem;
 use App\Models\StockTransfer;
 use App\Models\StockTransferItem;
+use App\Services\FiscalPeriodService;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseService
@@ -15,6 +18,8 @@ class PurchaseService
     public function __construct(
         private StockService $stockService,
         private AccountingService $accountingService,
+        private FiscalPeriodService $fiscalPeriod,
+        private TaxService $taxService,
     ) {}
 
     public function createPurchaseOrder(array $data, array $items): PurchaseOrder
@@ -101,6 +106,7 @@ class PurchaseService
                 return $invoice;
             }
 
+            $this->fiscalPeriod->assertOpen($invoice->invoice_date);
             $invoice->load('items');
             $this->postInvoiceStock($invoice, $userId);
             $invoice->update(['status' => 'posted']);
@@ -111,6 +117,82 @@ class PurchaseService
             }
 
             $this->accountingService->postPurchaseInvoice($invoice->fresh(['items.part', 'vendor']), $userId);
+
+            return $invoice->fresh();
+        });
+    }
+
+    public function createPurchaseReturn(array $data, array $items, bool $postStock = false): PurchaseReturn
+    {
+        return DB::transaction(function () use ($data, $items, $postStock) {
+            $this->fiscalPeriod->assertOpen($data['return_date']);
+            $return = PurchaseReturn::create($data);
+            $this->syncPurchaseReturnItems($return, $items);
+            $this->recalculatePurchaseReturn($return);
+
+            if ($postStock && $return->status === 'posted') {
+                $this->postPurchaseReturnStock($return, $data['created_by'] ?? null);
+                $return->refresh();
+                $this->accountingService->postPurchaseReturn($return->fresh(['items.part', 'vendor']), $data['created_by'] ?? null);
+            }
+
+            return $return->fresh(['items.part', 'vendor', 'branch', 'purchaseInvoice']);
+        });
+    }
+
+    public function postPurchaseReturn(PurchaseReturn $return, ?int $userId = null): PurchaseReturn
+    {
+        return DB::transaction(function () use ($return, $userId) {
+            if ($return->status === 'posted') {
+                return $return;
+            }
+
+            $this->fiscalPeriod->assertOpen($return->return_date);
+            $return->load('items');
+            $this->postPurchaseReturnStock($return, $userId);
+            $return->update(['status' => 'posted']);
+            $return->refresh();
+            $this->accountingService->postPurchaseReturn($return->fresh(['items.part', 'vendor']), $userId);
+
+            return $return->fresh();
+        });
+    }
+
+    public function voidInvoice(PurchaseInvoice $invoice, string $reason, ?int $userId = null): PurchaseInvoice
+    {
+        return DB::transaction(function () use ($invoice, $reason, $userId) {
+            if ($invoice->voided_at) {
+                throw new \RuntimeException('Invoice already voided.');
+            }
+            if ($invoice->status !== 'posted') {
+                throw new \RuntimeException('Only posted invoices can be voided.');
+            }
+
+            $this->fiscalPeriod->assertOpen($invoice->invoice_date);
+            $invoice->load('items');
+
+            foreach ($invoice->items as $item) {
+                if (! $item->location_id) {
+                    continue;
+                }
+                $this->stockService->issuePurchaseReturn(
+                    $invoice->branch_id,
+                    $item->location_id,
+                    $item->part_id,
+                    (float) $item->quantity,
+                    0,
+                    'VOID-'.$invoice->invoice_no,
+                    $userId
+                );
+            }
+
+            $this->accountingService->reverseDocumentEntry(PurchaseInvoice::class, $invoice->id, 'Void '.$invoice->invoice_no, $userId);
+
+            $invoice->update([
+                'voided_at' => now(),
+                'void_reason' => $reason,
+                'status' => 'voided',
+            ]);
 
             return $invoice->fresh();
         });
@@ -240,6 +322,59 @@ class PurchaseService
         $invoice->update([
             'subtotal' => $subtotal,
             'total_amount' => $subtotal + (float) $invoice->vat_amount,
+        ]);
+    }
+
+    protected function postPurchaseReturnStock(PurchaseReturn $return, ?int $userId = null): void
+    {
+        foreach ($return->items as $item) {
+            if (! $item->location_id) {
+                throw new \RuntimeException('Location required for return line.');
+            }
+
+            $this->stockService->issuePurchaseReturn(
+                $return->branch_id,
+                $item->location_id,
+                $item->part_id,
+                (float) $item->quantity,
+                $return->id,
+                $return->return_no,
+                $userId
+            );
+        }
+    }
+
+    protected function syncPurchaseReturnItems(PurchaseReturn $return, array $items): void
+    {
+        $return->items()->delete();
+
+        foreach ($items as $row) {
+            $part = \App\Models\Part::findOrFail($row['part_id']);
+            $vatPercent = (float) ($row['vat_percent'] ?? $this->taxService->resolveVatPercent($part));
+            $lineNet = (float) $row['quantity'] * (float) $row['unit_price'];
+
+            PurchaseReturnItem::create([
+                'purchase_return_id' => $return->id,
+                'part_id' => $row['part_id'],
+                'location_id' => $row['location_id'] ?? null,
+                'quantity' => $row['quantity'],
+                'unit_price' => $row['unit_price'],
+                'vat_percent' => $vatPercent,
+                'line_total' => $lineNet,
+            ]);
+        }
+    }
+
+    protected function recalculatePurchaseReturn(PurchaseReturn $return): void
+    {
+        $return->load('items');
+        $subtotal = $return->items->sum('line_total');
+        $vat = $return->items->sum(fn ($i) => (float) $i->line_total * ((float) $i->vat_percent / 100));
+
+        $return->update([
+            'subtotal' => $subtotal,
+            'vat_amount' => round($vat, 2),
+            'total_amount' => round($subtotal + $vat, 2),
         ]);
     }
 }

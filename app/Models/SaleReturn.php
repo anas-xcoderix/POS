@@ -13,6 +13,8 @@ class SaleReturn extends Model
         'status', 'total_amount', 'created_by', 'remarks',
     ];
 
+    protected $casts = ['return_date' => 'date'];
+
     public function items(): HasMany
     {
         return $this->hasMany(SaleReturnItem::class);

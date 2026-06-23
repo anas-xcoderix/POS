@@ -7,6 +7,8 @@ use App\Models\Location;
 use App\Models\Part;
 use App\Models\PurchaseInvoice;
 use App\Models\Vendor;
+use App\Services\DocumentEditService;
+use App\Services\GranularPermissionService;
 use App\Services\PurchaseService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,7 +16,11 @@ use Illuminate\View\View;
 
 class PurchaseInvoiceController extends Controller
 {
-    public function __construct(private PurchaseService $purchaseService) {}
+    public function __construct(
+        private PurchaseService $purchaseService,
+        private DocumentEditService $documentEditService,
+        private GranularPermissionService $granularPermissions,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -27,6 +33,7 @@ class PurchaseInvoiceController extends Controller
         return view('purchases.invoices.index', [
             'records' => $query->latest()->paginate(15)->withQueryString(),
             'search' => $search,
+            'canEditPosted' => $this->granularPermissions->can(auth()->user(), 'purchase.edit_posted'),
         ]);
     }
 
@@ -75,5 +82,58 @@ class PurchaseInvoiceController extends Controller
         }
 
         return back()->with('success', 'Purchase invoice posted and stock received.');
+    }
+
+    public function void(Request $request, PurchaseInvoice $purchaseInvoice): RedirectResponse
+    {
+        $data = $request->validate(['void_reason' => 'required|string|max:500']);
+
+        try {
+            $this->purchaseService->voidInvoice($purchaseInvoice, $data['void_reason'], auth()->id());
+        } catch (\Throwable $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Purchase invoice voided.');
+    }
+
+    public function editPosted(PurchaseInvoice $purchaseInvoice): View
+    {
+        $this->granularPermissions->assert(auth()->user(), 'purchase.edit_posted');
+
+        $purchaseInvoice->load(['items.part', 'items.location', 'vendor', 'branch']);
+
+        return view('purchases.invoices.edit-posted', [
+            'invoice' => $purchaseInvoice,
+            'parts' => Part::where('is_active', true)->with('brand')->get(),
+            'locations' => Location::with('branch')->get(),
+        ]);
+    }
+
+    public function updatePosted(Request $request, PurchaseInvoice $purchaseInvoice): RedirectResponse
+    {
+        $data = $request->validate([
+            'invoice_date' => 'required|date',
+            'vendor_invoice_no' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'items' => 'required|array|min:1',
+            'items.*.part_id' => 'required|exists:parts,id',
+            'items.*.location_id' => 'nullable|exists:locations,id',
+            'items.*.quantity' => 'required|numeric|min:0.01',
+            'items.*.unit_price' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $this->documentEditService->updatePostedPurchaseInvoice(
+                auth()->user(),
+                $purchaseInvoice,
+                $data,
+                $data['items']
+            );
+        } catch (\Throwable $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+
+        return redirect()->route('purchase-invoices.index')->with('success', 'Posted purchase invoice updated.');
     }
 }

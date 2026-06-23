@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Location extends Model
 {
-    protected $fillable = ['branch_id', 'code', 'name', 'aisle', 'rack', 'bin', 'is_active'];
+    protected $fillable = ['branch_id', 'code', 'name', 'location_type', 'aisle', 'rack', 'bin', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 

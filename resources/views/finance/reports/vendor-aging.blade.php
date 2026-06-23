@@ -1,4 +1,4 @@
-@php $title = 'Vendor Aging'; @endphp
+@php $title = __('modules.vendor_aging'); @endphp
 <x-erp-layout>
 <div class="mb-4 flex justify-between gap-3">
     <p class="text-sm text-slate-600">Outstanding purchase invoices by aging bucket.</p>

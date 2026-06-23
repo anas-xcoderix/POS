@@ -37,6 +37,7 @@ class LocationController extends MasterDataController
             'branch_id' => 'required|exists:branches,id',
             'code' => 'required|string|max:30',
             'name' => 'required|string|max:255',
+            'location_type' => 'required|string|in:warehouse,showroom,workshop',
             'aisle' => 'nullable|string|max:50',
             'rack' => 'nullable|string|max:50',
             'bin' => 'nullable|string|max:50',

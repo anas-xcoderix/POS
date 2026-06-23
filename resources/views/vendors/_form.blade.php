@@ -1,5 +1,5 @@
-<x-ui.form-field label="Code" name="code" required />
-<x-ui.form-field label="Name" name="name" required />
-<x-ui.form-field label="Phone" name="phone" type="tel" />
-<x-ui.form-field label="Email" name="email" type="email" />
-<x-ui.form-field label="Active" name="is_active" type="checkbox">Active vendor</x-ui.form-field>
+<x-ui.form-field :label="__('forms.code')" name="code" required />
+<x-ui.form-field :label="__('forms.name')" name="name" required />
+<x-ui.form-field :label="__('forms.phone')" name="phone" type="tel" />
+<x-ui.form-field :label="__('forms.email')" name="email" type="email" />
+<x-ui.form-field :label="__('forms.active')" name="is_active" type="checkbox">{{ __('forms.active') }}</x-ui.form-field>

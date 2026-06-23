@@ -1,13 +1,13 @@
 @include('components.master-crud', [
-    'title' => 'Vehicles',
+    'title' => __('modules.vehicles'),
     'resource' => 'vehicles',
-    'createLabel' => 'Add Vehicle',
+    'createLabel' => __('modules.add_vehicle'),
     'columns' => [
-        ['label' => 'Plate No', 'field' => 'plate_no'],
-        ['label' => 'Customer', 'relation' => 'customer', 'field' => 'name'],
-        ['label' => 'Make / Model', 'field' => 'make'],
-        ['label' => 'Istimara Expiry', 'field' => 'istimara_expiry'],
-        ['label' => 'Active', 'field' => 'is_active', 'type' => 'boolean'],
+        ['label' => __('ui.plate_no'), 'field' => 'plate_no'],
+        ['label' => __('ui.customer'), 'relation' => 'customer', 'field' => 'name'],
+        ['label' => __('ui.make_model'), 'field' => 'make'],
+        ['label' => __('ui.istimara_expiry'), 'field' => 'istimara_expiry'],
+        ['label' => __('ui.active'), 'field' => 'is_active', 'type' => 'boolean'],
     ],
     'formFields' => view('workshop.vehicles._form')->render(),
 ])

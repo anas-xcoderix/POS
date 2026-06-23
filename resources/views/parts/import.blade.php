@@ -1,4 +1,4 @@
-@php $title = 'Import Parts (CSV)'; @endphp
+@php $title = __('modules.import_parts'); @endphp
 <x-erp-layout>
 <div class="max-w-3xl space-y-6">
     <div class="erp-card p-6">

@@ -1,4 +1,4 @@
-@php $title = 'New Quotation'; @endphp
+@php $title = __('modules.new_quotation'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('quotations.store') }}" class="space-y-6">
     @csrf

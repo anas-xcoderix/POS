@@ -1,4 +1,4 @@
-@php $title = 'Payroll '.$run->payroll_no; @endphp
+@php $title = __('modules.payroll').' '.$run->payroll_no; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -1,4 +1,4 @@
-@php $title = 'Business Settings'; @endphp
+@php $title = __('modules.settings'); @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">

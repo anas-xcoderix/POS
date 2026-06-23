@@ -4,18 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\User;
+use App\Models\UserPermission;
+use App\Services\GranularPermissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class UserManagementController extends Controller
 {
+    public function __construct(private GranularPermissionService $granularPermissions) {}
+
     public function index(): View
     {
+        $users = User::with('branch')->orderBy('name')->paginate(20);
+        $permissionKeys = array_keys(config('erp.granular_permissions', []));
+
+        $userPermissions = UserPermission::whereIn('user_id', $users->pluck('id'))
+            ->where('granted', true)
+            ->get()
+            ->groupBy('user_id')
+            ->map(fn ($perms) => $perms->pluck('permission')->all());
+
         return view('users.index', [
-            'records' => User::with('branch')->orderBy('name')->paginate(20),
+            'records' => $users,
             'branches' => Branch::where('is_active', true)->orderBy('name')->get(),
             'roles' => array_keys(config('erp.roles', [])),
+            'granularPermissions' => config('erp.granular_permissions', []),
+            'userPermissions' => $userPermissions,
         ]);
     }
 
@@ -42,5 +57,21 @@ class UserManagementController extends Controller
         ]);
 
         return back()->with('success', 'User updated.');
+    }
+
+    public function updatePermissions(Request $request, User $user): RedirectResponse
+    {
+        $keys = array_keys(config('erp.granular_permissions', []));
+        $permissions = [];
+
+        foreach ($keys as $key) {
+            if ($request->boolean("permissions.{$key}")) {
+                $permissions[$key] = true;
+            }
+        }
+
+        $this->granularPermissions->syncUserPermissions($user, $permissions);
+
+        return back()->with('success', 'User permissions updated.');
     }
 }

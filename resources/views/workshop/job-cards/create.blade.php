@@ -1,4 +1,4 @@
-@php $title = 'New Job Card'; @endphp
+@php $title = __('modules.new_job_card'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('job-cards.store') }}" class="space-y-6">
     @csrf

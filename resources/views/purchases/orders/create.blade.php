@@ -1,4 +1,4 @@
-@php $title = 'New Purchase Order'; @endphp
+@php $title = __('modules.new_purchase_order'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('purchase-orders.store') }}" class="space-y-6">
     @csrf

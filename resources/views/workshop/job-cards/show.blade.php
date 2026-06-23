@@ -1,4 +1,4 @@
-@php $title = 'Job Card '.$jobCard->job_no; @endphp
+@php $title = __('modules.job_card').' '.$jobCard->job_no; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">

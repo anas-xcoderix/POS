@@ -1,4 +1,4 @@
-@php $title = 'Balance Sheet'; @endphp
+@php $title = __('modules.balance_sheet'); @endphp
 <x-erp-layout>
 <div class="space-y-4">
     <div class="erp-card p-4">

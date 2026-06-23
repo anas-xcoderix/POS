@@ -11,7 +11,7 @@ class JournalEntry extends Model
 {
     protected $fillable = [
         'entry_no', 'branch_id', 'entry_date', 'reference_type', 'reference_id',
-        'description', 'status', 'created_by',
+        'description', 'status', 'entry_type', 'created_by',
     ];
 
     protected $casts = ['entry_date' => 'date'];

@@ -1,4 +1,4 @@
-@php $title = 'Stock Movements'; @endphp
+@php $title = __('modules.stock_movements'); @endphp
 <x-erp-layout>
 <div class="erp-card overflow-hidden">
     <div class="border-b border-slate-100 px-5 py-4">

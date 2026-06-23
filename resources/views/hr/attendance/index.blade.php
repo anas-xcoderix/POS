@@ -1,4 +1,4 @@
-@php $title = 'Attendance'; @endphp
+@php $title = __('modules.attendance'); @endphp
 <x-erp-layout>
 <div class="space-y-4">
     <div class="erp-card p-4">

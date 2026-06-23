@@ -23,19 +23,37 @@
                         <td>{{ \Carbon\Carbon::parse($row->invoice_date)->format('M d, Y') }}</td>
                         <td class="font-medium">{{ number_format($row->total_amount, 2) }}</td>
                         <td>
-                            <span class="erp-badge {{ $row->status === 'posted' ? 'erp-badge-green' : 'erp-badge-amber' }}">
-                                {{ ucfirst($row->status) }}
+                            <span class="erp-badge {{ $row->voided_at ? 'erp-badge-red' : ($row->status === 'posted' ? 'erp-badge-green' : 'erp-badge-amber') }}">
+                                {{ $row->voided_at ? 'Voided' : ucfirst($row->status) }}
                             </span>
                         </td>
                         <td class="text-right space-x-1">
                             <a href="{{ route('documents.sales-invoice.pdf', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs" target="_blank">PDF</a>
-                            @if($row->status !== 'posted')
+                            @if($row->voided_at)
+                                <span class="text-xs text-slate-400">—</span>
+                            @elseif($row->status !== 'posted')
                                 <form method="POST" action="{{ route('sales-invoices.post', $row) }}" class="inline">
                                     @csrf
                                     <button class="erp-btn-primary !py-1.5 !px-3 text-xs">Post</button>
                                 </form>
                             @else
+                                <a href="{{ route('sales-invoices.edit-posted', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">Edit</a>
+                                <form method="POST" action="{{ route('pick-tickets.create-from-invoice', $row) }}" class="inline">@csrf
+                                    <button class="erp-btn-ghost !py-1.5 !px-3 text-xs">Pick</button>
+                                </form>
                                 <a href="{{ route('sale-returns.create', ['sales_invoice_id' => $row->id]) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">Return</a>
+                                <button type="button" onclick="voidInvoice{{ $row->id }}.showModal()" class="erp-btn-danger !py-1.5 !px-3 text-xs">Void</button>
+                                <dialog id="voidInvoice{{ $row->id }}" class="rounded-xl p-6 shadow-xl backdrop:bg-slate-900/40">
+                                    <form method="POST" action="{{ route('sales-invoices.void', $row) }}" class="space-y-4">
+                                        @csrf
+                                        <h4 class="font-bold">Void {{ $row->invoice_no }}</h4>
+                                        <textarea name="void_reason" required class="erp-input" rows="3" placeholder="Reason for void..."></textarea>
+                                        <div class="flex gap-2 justify-end">
+                                            <button type="button" onclick="this.closest('dialog').close()" class="erp-btn-secondary">Cancel</button>
+                                            <button class="erp-btn-danger">Confirm Void</button>
+                                        </div>
+                                    </form>
+                                </dialog>
                             @endif
                         </td>
                     </tr>

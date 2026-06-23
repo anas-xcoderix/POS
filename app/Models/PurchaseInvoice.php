@@ -11,7 +11,12 @@ class PurchaseInvoice extends Model
     protected $fillable = [
         'invoice_no', 'branch_id', 'vendor_id', 'purchase_order_id', 'invoice_date',
         'vendor_invoice_no', 'status', 'subtotal', 'vat_amount', 'total_amount',
-        'paid_amount', 'created_by', 'remarks',
+        'paid_amount', 'created_by', 'remarks', 'voided_at', 'void_reason',
+    ];
+
+    protected $casts = [
+        'invoice_date' => 'date',
+        'voided_at' => 'datetime',
     ];
 
     public function branch(): BelongsTo

@@ -1,11 +1,11 @@
 @include('components.master-crud', [
-    'title' => 'Franchises',
+    'title' => __('modules.franchises'),
     'resource' => 'franchises',
-    'createLabel' => 'Add Franchise',
+    'createLabel' => __('modules.add_franchise'),
     'columns' => [
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Arabic', 'field' => 'name_ar'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.arabic_name'), 'field' => 'name_ar'],
     ],
     'formFields' => view('brands._form')->render(),
 ])

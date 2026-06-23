@@ -1,4 +1,4 @@
-@php $title = 'Income Statement'; @endphp
+@php $title = __('modules.income_statement'); @endphp
 <x-erp-layout>
 <div class="space-y-4">
     <div class="erp-card p-4">

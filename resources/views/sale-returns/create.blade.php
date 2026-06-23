@@ -1,4 +1,4 @@
-@php $title = 'New Sale Return'; @endphp
+@php $title = __('modules.new_sale_return'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('sale-returns.store') }}" class="space-y-6" id="returnForm">
     @csrf

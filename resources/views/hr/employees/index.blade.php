@@ -1,14 +1,14 @@
 @include('components.master-crud', [
-    'title' => 'Employees',
+    'title' => __('modules.employees'),
     'resource' => 'employees',
-    'createLabel' => 'Add Employee',
+    'createLabel' => __('modules.add_employee'),
     'columns' => [
-        ['label' => 'Employee No', 'field' => 'employee_no'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Department', 'relation' => 'department', 'field' => 'name'],
-        ['label' => 'Job Title', 'field' => 'job_title'],
-        ['label' => 'Basic Salary', 'field' => 'basic_salary', 'format' => 'money'],
-        ['label' => 'Active', 'field' => 'is_active', 'type' => 'boolean'],
+        ['label' => __('ui.employee_no'), 'field' => 'employee_no'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('modules.departments'), 'relation' => 'department', 'field' => 'name'],
+        ['label' => __('ui.job_title'), 'field' => 'job_title'],
+        ['label' => __('ui.basic_salary'), 'field' => 'basic_salary', 'format' => 'money'],
+        ['label' => __('ui.active'), 'field' => 'is_active', 'type' => 'boolean'],
     ],
     'formFields' => view('hr.employees._form')->render(),
 ])

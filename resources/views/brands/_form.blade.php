@@ -1,4 +1,4 @@
-<x-ui.form-field label="Code" name="code" required />
-<x-ui.form-field label="Name" name="name" required />
-<x-ui.form-field label="Arabic Name" name="name_ar" />
-<x-ui.form-field label="Active" name="is_active" type="checkbox">Active record</x-ui.form-field>
+<x-ui.form-field :label="__('forms.code')" name="code" required />
+<x-ui.form-field :label="__('forms.name')" name="name" required />
+<x-ui.form-field :label="__('forms.name_ar')" name="name_ar" />
+<x-ui.form-field :label="__('forms.active')" name="is_active" type="checkbox">{{ __('forms.active') }}</x-ui.form-field>

@@ -16,7 +16,7 @@
 <body>
     <div class="label">
         <div class="part-no">{{ $part->part_number }}</div>
-        <div class="desc">{{ Str::limit($part->description_en, 50) }}</div>
+        <div class="desc">{{ Str::limit(localized($part, 'description_en', 'description_ar'), 50) }}</div>
         <div class="barcode"><img src="data:image/png;base64,{{ $barcode }}" alt="barcode"></div>
         <div class="code">{{ $code }}</div>
         @if($part->list_price > 0)

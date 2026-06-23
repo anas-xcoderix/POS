@@ -1,11 +1,11 @@
 @include('components.master-crud', [
-    'title' => 'Origins',
+    'title' => __('modules.origins'),
     'resource' => 'origins',
-    'createLabel' => 'Add Origin',
+    'createLabel' => __('modules.add_origin'),
     'columns' => [
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Arabic', 'field' => 'name_ar'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.arabic_name'), 'field' => 'name_ar'],
     ],
     'formFields' => view('brands._form')->render(),
 ])

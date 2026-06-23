@@ -1,11 +1,12 @@
-@php $title = 'Journal Entries'; @endphp
+@php $title = __('modules.journal_entries'); @endphp
 <x-erp-layout>
 <div class="erp-card overflow-hidden">
-    <div class="border-b border-slate-100 px-5 py-4">
-        <form method="GET" class="relative max-w-sm">
+    <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <form method="GET" class="relative max-w-sm flex-1">
             <x-ui.icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input type="text" name="search" value="{{ $search }}" placeholder="Entry no or description..." class="erp-input !mt-0 pl-10">
         </form>
+        <a href="{{ route('journal-entries.create') }}" class="erp-btn-primary"><x-ui.icon name="plus" class="h-4 w-4" /> Manual Entry</a>
     </div>
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">

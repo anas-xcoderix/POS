@@ -5,6 +5,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\MasterPrintController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\FinanceReportController;
 use App\Http\Controllers\JournalEntryController;
@@ -34,9 +35,32 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\JobCardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WorkshopReportController;
+use App\Http\Controllers\PurchaseReturnController;
+use App\Http\Controllers\PaymentReceiptController;
+use App\Http\Controllers\FiscalPeriodController;
+use App\Http\Controllers\StockCountController;
+use App\Http\Controllers\PartKitController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\ChequeController;
+use App\Http\Controllers\DeliveryNoteController;
+use App\Http\Controllers\VehicleOrderController;
+use App\Http\Controllers\VehicleExpenseController;
+use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\ProformaInvoiceController;
+use App\Http\Controllers\PosController;
+use App\Http\Controllers\PickTicketController;
+use App\Http\Controllers\CashBookController;
+use App\Http\Controllers\FixedAssetController;
+use App\Http\Controllers\FixedAssetCategoryController;
+use App\Http\Controllers\StockBatchController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\ShowroomVehicleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
+
+Route::post('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch')->where('locale', 'en|ar');
 
 Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -45,6 +69,7 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::resource('brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('origins', OriginController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('franchises', FranchiseController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('units', UnitController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('locations', LocationController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('parts/import', [PartImportController::class, 'form'])->name('parts.import');
     Route::post('parts/import', [PartImportController::class, 'store'])->name('parts.import.store');
@@ -61,10 +86,20 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
 
     Route::resource('sales-invoices', SalesInvoiceController::class)->only(['index', 'create', 'store']);
+    Route::get('sales-invoices/{sales_invoice}/edit-posted', [SalesInvoiceController::class, 'editPosted'])->name('sales-invoices.edit-posted');
+    Route::put('sales-invoices/{sales_invoice}/edit-posted', [SalesInvoiceController::class, 'updatePosted'])->name('sales-invoices.update-posted');
     Route::post('sales-invoices/{sales_invoice}/post', [SalesInvoiceController::class, 'post'])->name('sales-invoices.post');
+    Route::post('sales-invoices/{sales_invoice}/void', [SalesInvoiceController::class, 'void'])->name('sales-invoices.void');
 
     Route::resource('sale-returns', SaleReturnController::class)->only(['index', 'create', 'store']);
     Route::post('sale-returns/{sale_return}/post', [SaleReturnController::class, 'post'])->name('sale-returns.post');
+
+    Route::resource('purchase-returns', PurchaseReturnController::class)->only(['index', 'create', 'store']);
+    Route::post('purchase-returns/{purchase_return}/post', [PurchaseReturnController::class, 'post'])->name('purchase-returns.post');
+
+    Route::resource('payments', PaymentReceiptController::class)->only(['index', 'create', 'store']);
+    Route::get('customers/{customer}/statement', [PaymentReceiptController::class, 'customerStatement'])->name('customers.statement');
+    Route::get('vendors/{vendor}/statement', [PaymentReceiptController::class, 'vendorStatement'])->name('vendors.statement');
 
     Route::resource('stock-transfers', StockTransferController::class)->only(['index', 'create', 'store']);
     Route::post('stock-transfers/{stock_transfer}/complete', [StockTransferController::class, 'complete'])->name('stock-transfers.complete');
@@ -73,18 +108,42 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::post('purchase-orders/{purchase_order}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
 
     Route::resource('purchase-invoices', PurchaseInvoiceController::class)->only(['index', 'create', 'store']);
+    Route::get('purchase-invoices/{purchase_invoice}/edit-posted', [PurchaseInvoiceController::class, 'editPosted'])->name('purchase-invoices.edit-posted');
+    Route::put('purchase-invoices/{purchase_invoice}/edit-posted', [PurchaseInvoiceController::class, 'updatePosted'])->name('purchase-invoices.update-posted');
     Route::post('purchase-invoices/{purchase_invoice}/post', [PurchaseInvoiceController::class, 'post'])->name('purchase-invoices.post');
+    Route::post('purchase-invoices/{purchase_invoice}/void', [PurchaseInvoiceController::class, 'void'])->name('purchase-invoices.void');
+
+    Route::get('stock-counts', [StockCountController::class, 'index'])->name('stock-counts.index');
+    Route::get('stock-counts/create', [StockCountController::class, 'create'])->name('stock-counts.create');
+    Route::post('stock-counts', [StockCountController::class, 'store'])->name('stock-counts.store');
+    Route::get('stock-counts/{stock_count}', [StockCountController::class, 'show'])->name('stock-counts.show');
+    Route::post('stock-counts/{stock_count}/post', [StockCountController::class, 'post'])->name('stock-counts.post');
+
+    Route::get('parts/{part}/kits', [PartKitController::class, 'edit'])->name('parts.kits');
+    Route::post('parts/{part}/kits', [PartKitController::class, 'storeKit'])->name('parts.kits.store');
+    Route::delete('parts/{part}/kits/{kit}', [PartKitController::class, 'destroyKit'])->name('parts.kits.destroy');
+    Route::post('parts/{part}/alternatives', [PartKitController::class, 'storeAlternative'])->name('parts.alternatives.store');
+    Route::delete('parts/{part}/alternatives/{alternative}', [PartKitController::class, 'destroyAlternative'])->name('parts.alternatives.destroy');
 
     Route::get('documents/sales-invoices/{sales_invoice}/pdf', [DocumentController::class, 'salesInvoicePdf'])->name('documents.sales-invoice.pdf');
     Route::get('documents/purchase-invoices/{purchase_invoice}/pdf', [DocumentController::class, 'purchaseInvoicePdf'])->name('documents.purchase-invoice.pdf');
     Route::get('documents/parts/{part}/label', [DocumentController::class, 'partBarcode'])->name('documents.part.label');
     Route::get('documents/parts/{part}/barcode.png', [DocumentController::class, 'partBarcodeImage'])->name('documents.part.barcode');
+    Route::get('documents/masters/customers/pdf', [MasterPrintController::class, 'customers'])->name('documents.masters.customers.pdf');
+    Route::get('documents/masters/vendors/pdf', [MasterPrintController::class, 'vendors'])->name('documents.masters.vendors.pdf');
+    Route::get('documents/masters/parts/pdf', [MasterPrintController::class, 'parts'])->name('documents.masters.parts.pdf');
 
     Route::get('pricing/resolve', [PricingController::class, 'resolve'])->name('pricing.resolve');
 
     Route::resource('accounts', AccountController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('journal-entries', [JournalEntryController::class, 'index'])->name('journal-entries.index');
+    Route::get('journal-entries/create', [JournalEntryController::class, 'create'])->name('journal-entries.create');
+    Route::post('journal-entries', [JournalEntryController::class, 'store'])->name('journal-entries.store');
     Route::get('journal-entries/{journal_entry}', [JournalEntryController::class, 'show'])->name('journal-entries.show');
+
+    Route::get('finance/periods', [FiscalPeriodController::class, 'index'])->name('finance.periods.index');
+    Route::post('finance/periods/close', [FiscalPeriodController::class, 'close'])->name('finance.periods.close');
+    Route::post('finance/periods/{fiscalPeriod}/reopen', [FiscalPeriodController::class, 'reopen'])->name('finance.periods.reopen');
 
     Route::get('finance/reports', [FinanceReportController::class, 'index'])->name('finance.reports.index');
     Route::get('finance/reports/trial-balance', [FinanceReportController::class, 'trialBalance'])->name('finance.reports.trial-balance');
@@ -115,6 +174,13 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::get('reports/{report}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
     Route::get('reports/{report}/csv', [ReportController::class, 'csv'])->name('reports.csv');
 
+    Route::resource('cheques', ChequeController::class)->only(['index', 'create', 'store', 'update']);
+    Route::resource('delivery-notes', DeliveryNoteController::class)->only(['index', 'create', 'store', 'show']);
+    Route::resource('vehicle-orders', VehicleOrderController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('vehicles/{vehicle}/expenses', [VehicleExpenseController::class, 'index'])->name('vehicles.expenses');
+    Route::post('vehicles/{vehicle}/expenses', [VehicleExpenseController::class, 'store'])->name('vehicles.expenses.store');
+    Route::delete('vehicle-expenses/{vehicleExpense}', [VehicleExpenseController::class, 'destroy'])->name('vehicle-expenses.destroy');
+
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('discount-rules', [SettingsController::class, 'storeDiscountRule'])->name('discount-rules.store');
@@ -122,6 +188,44 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
 
     Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
     Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+    Route::put('users/{user}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.permissions.update');
+
+    Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('currencies/{currency}/rate', [CurrencyController::class, 'setRate'])->name('currencies.set-rate');
+
+    Route::resource('proforma-invoices', ProformaInvoiceController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('proforma-invoices/{proforma_invoice}/convert', [ProformaInvoiceController::class, 'convert'])->name('proforma-invoices.convert');
+
+    Route::get('pos', [PosController::class, 'index'])->name('pos.index');
+    Route::post('pos/terminals/{terminal}/open-session', [PosController::class, 'openSession'])->name('pos.open-session');
+    Route::get('pos/sessions/{session}', [PosController::class, 'counter'])->name('pos.counter');
+    Route::post('pos/sessions/{session}/sale', [PosController::class, 'quickSale'])->name('pos.quick-sale');
+    Route::post('pos/sessions/{session}/close', [PosController::class, 'closeSession'])->name('pos.close-session');
+
+    Route::get('pick-tickets', [PickTicketController::class, 'index'])->name('pick-tickets.index');
+    Route::post('pick-tickets/from-invoice/{sales_invoice}', [PickTicketController::class, 'createFromInvoice'])->name('pick-tickets.create-from-invoice');
+    Route::get('pick-tickets/{pick_ticket}', [PickTicketController::class, 'show'])->name('pick-tickets.show');
+    Route::post('pick-tickets/{pick_ticket}/confirm', [PickTicketController::class, 'confirm'])->name('pick-tickets.confirm');
+
+    Route::get('cash-book', [CashBookController::class, 'index'])->name('cash-book.index');
+    Route::get('cash-book/create', [CashBookController::class, 'create'])->name('cash-book.create');
+    Route::post('cash-book', [CashBookController::class, 'store'])->name('cash-book.store');
+
+    Route::resource('fixed-assets', FixedAssetController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('fixed-assets/depreciate', [FixedAssetController::class, 'runDepreciation'])->name('fixed-assets.depreciate');
+    Route::resource('fixed-asset-categories', FixedAssetCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::get('stock-batches', [StockBatchController::class, 'index'])->name('stock-batches.index');
+
+    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+    Route::get('showroom-vehicles', [ShowroomVehicleController::class, 'index'])->name('showroom-vehicles.index');
+    Route::get('showroom-vehicles/create', [ShowroomVehicleController::class, 'create'])->name('showroom-vehicles.create');
+    Route::post('showroom-vehicles', [ShowroomVehicleController::class, 'store'])->name('showroom-vehicles.store');
+    Route::get('showroom-vehicles/{showroom_vehicle}', [ShowroomVehicleController::class, 'show'])->name('showroom-vehicles.show');
+    Route::post('showroom-vehicles/{showroom_vehicle}/transfer', [ShowroomVehicleController::class, 'transfer'])->name('showroom-vehicles.transfer');
+    Route::post('showroom-vehicles/{showroom_vehicle}/sell', [ShowroomVehicleController::class, 'sell'])->name('showroom-vehicles.sell');
+    Route::post('showroom-transfers/{showroomVehicleTransfer}/receive', [ShowroomVehicleController::class, 'receiveTransfer'])->name('showroom-transfers.receive');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

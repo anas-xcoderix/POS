@@ -1,4 +1,4 @@
-@php $title = 'Customer Aging'; @endphp
+@php $title = __('modules.customer_aging'); @endphp
 <x-erp-layout>
 <div class="mb-4 flex justify-between gap-3">
     <p class="text-sm text-slate-600">Outstanding credit sales by aging bucket (days since invoice date).</p>

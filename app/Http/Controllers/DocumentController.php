@@ -18,7 +18,7 @@ class DocumentController extends Controller
     {
         $salesInvoice->load(['items.part.brand', 'customer', 'branch']);
 
-        $pdf = Pdf::loadView('pdf.sales-invoice', compact('salesInvoice'));
+        $pdf = Pdf::loadView(pdf_view('sales-invoice'), compact('salesInvoice'));
 
         return $pdf->download('sales-invoice-'.$salesInvoice->invoice_no.'.pdf');
     }
@@ -27,7 +27,7 @@ class DocumentController extends Controller
     {
         $purchaseInvoice->load(['items.part.brand', 'vendor', 'branch', 'purchaseOrder']);
 
-        $pdf = Pdf::loadView('pdf.purchase-invoice', compact('purchaseInvoice'));
+        $pdf = Pdf::loadView(pdf_view('purchase-invoice'), compact('purchaseInvoice'));
 
         return $pdf->download('purchase-invoice-'.$purchaseInvoice->invoice_no.'.pdf');
     }
@@ -38,7 +38,7 @@ class DocumentController extends Controller
         $generator = new BarcodeGeneratorPNG;
         $barcode = base64_encode($generator->getBarcode($code, $generator::TYPE_CODE_128, 2, 60));
 
-        $pdf = Pdf::loadView('pdf.part-label', compact('part', 'barcode', 'code'));
+        $pdf = Pdf::loadView(pdf_view('part-label'), compact('part', 'barcode', 'code'));
 
         return $pdf->download('label-'.$part->part_number.'.pdf');
     }

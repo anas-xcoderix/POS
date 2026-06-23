@@ -1,4 +1,4 @@
-@php $title = 'Quotations'; @endphp
+@php $title = __('modules.quotations'); @endphp
 <x-erp-layout>
 <div class="erp-card overflow-hidden">
     <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">

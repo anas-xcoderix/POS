@@ -1,12 +1,12 @@
 @include('components.master-crud', [
-    'title' => 'Brands',
+    'title' => __('modules.brands'),
     'resource' => 'brands',
-    'createLabel' => 'Add Brand',
+    'createLabel' => __('modules.add_brand'),
     'columns' => [
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Arabic', 'field' => 'name_ar'],
-        ['label' => 'Status', 'field' => 'is_active', 'type' => 'boolean'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.arabic_name'), 'field' => 'name_ar'],
+        ['label' => __('ui.status'), 'field' => 'is_active', 'type' => 'boolean'],
     ],
     'formFields' => view('brands._form')->render(),
 ])

@@ -147,5 +147,7 @@ class DatabaseSeeder extends Seeder
             'priority' => 10,
             'is_active' => true,
         ]);
+
+        $this->call(DesktopParitySeeder::class);
     }
 }

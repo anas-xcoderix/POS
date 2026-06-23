@@ -21,6 +21,7 @@ class SalesService
         private CreditService $creditService,
         private BranchScopeService $branchScope,
         private AccountingService $accountingService,
+        private FiscalPeriodService $fiscalPeriod,
     ) {}
 
     public function createQuotation(array $data, array $items): Quotation
@@ -95,7 +96,10 @@ class SalesService
                 $this->postInvoiceStock($invoice, $data['created_by'] ?? null);
                 $invoice->refresh();
                 $this->creditService->chargeForInvoice($invoice);
+                $this->fiscalPeriod->assertOpen($invoice->invoice_date);
                 $this->accountingService->postSalesInvoice($invoice->fresh(['items.part', 'customer']), $data['created_by'] ?? null);
+            } elseif ($invoice->status === 'draft') {
+                $this->reserveInvoiceStock($invoice);
             }
 
             return $invoice->fresh(['items.part', 'customer', 'branch']);
@@ -146,6 +150,7 @@ class SalesService
                 return $invoice;
             }
 
+            $this->fiscalPeriod->assertOpen($invoice->invoice_date);
             $invoice->load(['items', 'customer']);
             $this->creditService->assertCanCharge(
                 $invoice->customer,
@@ -153,11 +158,55 @@ class SalesService
                 $invoice->invoice_type
             );
 
-            $this->postInvoiceStock($invoice, $userId);
+            $this->postInvoiceStock($invoice, $userId, true);
             $invoice->update(['status' => 'posted']);
             $invoice->refresh();
             $this->creditService->chargeForInvoice($invoice);
             $this->accountingService->postSalesInvoice($invoice->fresh(['items.part', 'customer']), $userId);
+
+            return $invoice->fresh();
+        });
+    }
+
+    public function voidInvoice(SalesInvoice $invoice, string $reason, ?int $userId = null): SalesInvoice
+    {
+        return DB::transaction(function () use ($invoice, $reason, $userId) {
+            if ($invoice->voided_at) {
+                throw new \RuntimeException('Invoice already voided.');
+            }
+
+            $this->fiscalPeriod->assertOpen($invoice->invoice_date);
+            $invoice->load('items');
+
+            if ($invoice->status === 'draft') {
+                $this->releaseInvoiceReservations($invoice);
+            } elseif ($invoice->status === 'posted') {
+                foreach ($invoice->items as $item) {
+                    $item->loadMissing('part');
+                    if ($item->part?->part_number === 'SVC-LABOR' || ! $item->location_id) {
+                        continue;
+                    }
+                    $this->stockService->receiveSaleReturn(
+                        $invoice->branch_id,
+                        $item->location_id,
+                        $item->part_id,
+                        (float) $item->quantity,
+                        (float) ($item->unit_cost ?: $item->part?->cost_price ?? 0),
+                        0,
+                        'VOID-'.$invoice->invoice_no,
+                        $userId
+                    );
+                }
+                $this->accountingService->reverseDocumentEntry(SalesInvoice::class, $invoice->id, 'Void '.$invoice->invoice_no, $userId);
+            } else {
+                throw new \RuntimeException('Cannot void this invoice.');
+            }
+
+            $invoice->update([
+                'voided_at' => now(),
+                'void_reason' => $reason,
+                'status' => 'voided',
+            ]);
 
             return $invoice->fresh();
         });
@@ -198,7 +247,7 @@ class SalesService
         }
     }
 
-    protected function postInvoiceStock(SalesInvoice $invoice, ?int $userId = null): void
+    protected function postInvoiceStock(SalesInvoice $invoice, ?int $userId = null, bool $fromReservation = false): void
     {
         foreach ($invoice->items as $item) {
             $item->loadMissing('part');
@@ -217,7 +266,46 @@ class SalesService
                 (float) $item->quantity,
                 $invoice->id,
                 $invoice->invoice_no,
-                $userId
+                $userId,
+                $fromReservation
+            );
+        }
+    }
+
+    protected function reserveInvoiceStock(SalesInvoice $invoice): void
+    {
+        foreach ($invoice->items as $item) {
+            $item->loadMissing('part');
+            if ($item->part?->part_number === 'SVC-LABOR' || ! $item->location_id) {
+                continue;
+            }
+
+            $this->stockService->reserveForSale(
+                $invoice->branch_id,
+                $item->location_id,
+                $item->part_id,
+                (float) $item->quantity,
+                $invoice->id,
+                $invoice->invoice_no
+            );
+        }
+    }
+
+    protected function releaseInvoiceReservations(SalesInvoice $invoice): void
+    {
+        foreach ($invoice->items as $item) {
+            $item->loadMissing('part');
+            if ($item->part?->part_number === 'SVC-LABOR' || ! $item->location_id) {
+                continue;
+            }
+
+            $this->stockService->releaseReservation(
+                $invoice->branch_id,
+                $item->location_id,
+                $item->part_id,
+                (float) $item->quantity,
+                $invoice->id,
+                $invoice->invoice_no
             );
         }
     }

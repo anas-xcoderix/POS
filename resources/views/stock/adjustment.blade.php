@@ -1,4 +1,4 @@
-@php $title = 'Stock Adjustment'; @endphp
+@php $title = __('modules.stock_adjustment'); @endphp
 <x-erp-layout>
 <div class="max-w-2xl">
     <div class="erp-card p-6">

@@ -1,4 +1,4 @@
-@php $title = 'New Stock Transfer'; @endphp
+@php $title = __('modules.new_stock_transfer'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('stock-transfers.store') }}" class="space-y-6">
     @csrf

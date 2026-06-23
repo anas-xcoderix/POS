@@ -1,4 +1,4 @@
-@php $title = 'New Purchase Invoice'; @endphp
+@php $title = __('modules.new_purchase_invoice'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('purchase-invoices.store') }}" class="space-y-6">
     @csrf

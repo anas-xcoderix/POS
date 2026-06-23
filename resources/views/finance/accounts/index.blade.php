@@ -1,4 +1,4 @@
-@php $title = 'Chart of Accounts'; @endphp
+@php $title = __('modules.chart_of_accounts'); @endphp
 <x-erp-layout>
 <div x-data="{ createOpen: false, editOpen: false }">
     <div class="erp-card overflow-hidden">

@@ -1,4 +1,4 @@
-@php $title = 'Generate Payroll'; @endphp
+@php $title = __('modules.generate_payroll'); @endphp
 <x-erp-layout>
 <div class="erp-card max-w-lg p-6">
     <h3 class="mb-4 text-lg font-bold text-slate-900">Generate Monthly Payroll</h3>

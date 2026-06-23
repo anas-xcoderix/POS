@@ -1,12 +1,12 @@
 @include('components.master-crud', [
-    'title' => 'Branches',
+    'title' => __('modules.branches'),
     'resource' => 'branches',
-    'createLabel' => 'Add Branch',
+    'createLabel' => __('modules.add_branch'),
     'columns' => [
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Phone', 'field' => 'phone'],
-        ['label' => 'Head Office', 'field' => 'is_head_office', 'type' => 'boolean'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.phone'), 'field' => 'phone'],
+        ['label' => __('ui.head_office'), 'field' => 'is_head_office', 'type' => 'boolean'],
     ],
     'formFields' => view('branches._form')->render(),
 ])

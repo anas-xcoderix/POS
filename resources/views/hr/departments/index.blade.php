@@ -1,11 +1,11 @@
 @include('components.master-crud', [
-    'title' => 'Departments',
+    'title' => __('modules.departments'),
     'resource' => 'departments',
-    'createLabel' => 'Add Department',
+    'createLabel' => __('modules.add_department'),
     'columns' => [
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Active', 'field' => 'is_active', 'type' => 'boolean'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.active'), 'field' => 'is_active', 'type' => 'boolean'],
     ],
     'formFields' => view('hr.departments._form')->render(),
 ])

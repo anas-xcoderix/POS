@@ -1,4 +1,4 @@
-@php $title = 'Journal '.$entry->entry_no; @endphp
+@php $title = __('modules.journal').' '.$entry->entry_no; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">

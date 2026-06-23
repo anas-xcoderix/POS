@@ -7,7 +7,9 @@ use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
+use App\Models\PaymentReceipt;
 use App\Models\PurchaseInvoice;
+use App\Models\PurchaseReturn;
 use App\Models\SaleReturn;
 use App\Models\SalesInvoice;
 use App\Models\Vendor;
@@ -17,7 +19,10 @@ use Illuminate\Support\Facades\DB;
 
 class AccountingService
 {
-    public function __construct(private SettingService $settings) {}
+    public function __construct(
+        private SettingService $settings,
+        private FiscalPeriodService $fiscalPeriod,
+    ) {}
 
     public function isAutoPostEnabled(): bool
     {
@@ -42,10 +47,15 @@ class AccountingService
     public function postEntry(array $header, array $lines, ?string $referenceType = null, ?int $referenceId = null): JournalEntry
     {
         return DB::transaction(function () use ($header, $lines, $referenceType, $referenceId) {
+            if (! empty($header['entry_date'])) {
+                $this->fiscalPeriod->assertOpen($header['entry_date']);
+            }
+
             if ($referenceType && $referenceId) {
                 $exists = JournalEntry::where('reference_type', $referenceType)
                     ->where('reference_id', $referenceId)
                     ->where('status', 'posted')
+                    ->where('entry_type', '!=', 'reversal')
                     ->exists();
                 if ($exists) {
                     throw new \RuntimeException('Journal entry already posted for this document.');
@@ -61,6 +71,7 @@ class AccountingService
             $entry = JournalEntry::create(array_merge([
                 'entry_no' => $this->nextEntryNo(),
                 'branch_id' => Branch::query()->value('id'),
+                'entry_type' => 'auto',
             ], $header, [
                 'reference_type' => $referenceType,
                 'reference_id' => $referenceId,
@@ -191,6 +202,113 @@ class AccountingService
             'description' => 'Sale return '.$return->return_no,
             'created_by' => $userId,
         ], $lines, SaleReturn::class, $return->id);
+    }
+
+    public function postPurchaseReturn(PurchaseReturn $return, ?int $userId = null): ?JournalEntry
+    {
+        if (! $this->isAutoPostEnabled()) {
+            return null;
+        }
+
+        $return->load(['items.part', 'vendor']);
+        $total = round((float) $return->total_amount, 2);
+        if ($total <= 0) {
+            return null;
+        }
+
+        $subtotal = round((float) $return->subtotal, 2);
+        $vat = round((float) $return->vat_amount, 2);
+
+        $lines = [
+            ['account_id' => $this->accountByCode($this->glCode('accounts_payable'))->id, 'debit' => $total, 'credit' => 0, 'description' => 'Purchase return'],
+            ['account_id' => $this->accountByCode($this->glCode('inventory'))->id, 'debit' => 0, 'credit' => $subtotal, 'description' => 'Stock returned'],
+        ];
+
+        if ($vat > 0) {
+            $lines[] = ['account_id' => $this->accountByCode($this->glCode('vat_input'))->id, 'debit' => 0, 'credit' => $vat, 'description' => 'Input VAT reversal'];
+        }
+
+        return $this->postEntry([
+            'entry_no' => $this->nextEntryNo(),
+            'branch_id' => $return->branch_id,
+            'entry_date' => $return->return_date,
+            'description' => 'Purchase return '.$return->return_no,
+            'created_by' => $userId,
+        ], $lines, PurchaseReturn::class, $return->id);
+    }
+
+    public function postPaymentReceipt(PaymentReceipt $receipt, ?int $userId = null): ?JournalEntry
+    {
+        if (! $this->isAutoPostEnabled()) {
+            return null;
+        }
+
+        $amount = round((float) $receipt->amount, 2);
+        if ($amount <= 0) {
+            return null;
+        }
+
+        $cash = $this->accountByCode($this->glCode('cash'));
+
+        if ($receipt->party_type === 'customer') {
+            $lines = [
+                ['account_id' => $cash->id, 'debit' => $amount, 'credit' => 0, 'description' => 'Customer receipt'],
+                ['account_id' => $this->accountByCode($this->glCode('accounts_receivable'))->id, 'debit' => 0, 'credit' => $amount, 'description' => 'AR settlement'],
+            ];
+        } else {
+            $lines = [
+                ['account_id' => $this->accountByCode($this->glCode('accounts_payable'))->id, 'debit' => $amount, 'credit' => 0, 'description' => 'Vendor payment'],
+                ['account_id' => $cash->id, 'debit' => 0, 'credit' => $amount, 'description' => 'Cash paid'],
+            ];
+        }
+
+        return $this->postEntry([
+            'entry_no' => $this->nextEntryNo(),
+            'branch_id' => $receipt->branch_id,
+            'entry_date' => $receipt->receipt_date,
+            'description' => 'Payment '.$receipt->receipt_no,
+            'created_by' => $userId,
+        ], $lines, PaymentReceipt::class, $receipt->id);
+    }
+
+    public function postManualJournal(array $header, array $lines, ?int $userId = null): JournalEntry
+    {
+        return $this->postEntry(array_merge($header, [
+            'entry_no' => $this->nextEntryNo(),
+            'entry_type' => 'manual',
+            'created_by' => $userId,
+        ]), $lines);
+    }
+
+    public function reverseDocumentEntry(string $referenceType, int $referenceId, string $description, ?int $userId = null): ?JournalEntry
+    {
+        $original = JournalEntry::with('lines')
+            ->where('reference_type', $referenceType)
+            ->where('reference_id', $referenceId)
+            ->where('status', 'posted')
+            ->where('entry_type', '!=', 'reversal')
+            ->latest()
+            ->first();
+
+        if (! $original) {
+            return null;
+        }
+
+        $lines = $original->lines->map(fn ($line) => [
+            'account_id' => $line->account_id,
+            'debit' => $line->credit,
+            'credit' => $line->debit,
+            'description' => 'Reversal: '.($line->description ?? ''),
+        ])->all();
+
+        return $this->postEntry([
+            'entry_no' => $this->nextEntryNo(),
+            'branch_id' => $original->branch_id,
+            'entry_date' => now()->toDateString(),
+            'description' => $description,
+            'entry_type' => 'reversal',
+            'created_by' => $userId,
+        ], $lines);
     }
 
     public function trialBalance(?string $from = null, ?string $to = null): Collection

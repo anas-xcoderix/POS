@@ -1,4 +1,4 @@
-@php $title = 'Finance Reports'; @endphp
+@php $title = __('modules.finance_reports'); @endphp
 <x-erp-layout>
 <div class="mb-4">
     <a href="{{ route('reports.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-700">← All Reports Center (30 reports)</a>

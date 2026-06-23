@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Part;
 use App\Models\PurchaseInvoice;
+use App\Models\PurchaseReturn;
 use App\Models\SaleReturn;
 use App\Models\SalesInvoice;
 use App\Models\StockBalance;
@@ -20,6 +21,108 @@ class StockService
             ->where('location_id', $locationId)
             ->where('part_id', $partId)
             ->value('quantity') ?? 0;
+    }
+
+    public function getAvailable(int $branchId, int $locationId, int $partId): float
+    {
+        $balance = StockBalance::query()
+            ->where('branch_id', $branchId)
+            ->where('location_id', $locationId)
+            ->where('part_id', $partId)
+            ->first();
+
+        if (! $balance) {
+            return 0;
+        }
+
+        return max(0, (float) $balance->quantity - (float) $balance->reserved_qty);
+    }
+
+    public function reserveForSale(
+        int $branchId,
+        int $locationId,
+        int $partId,
+        float $quantity,
+        int $salesInvoiceId,
+        string $invoiceNo
+    ): StockBalance {
+        return DB::transaction(function () use ($branchId, $locationId, $partId, $quantity, $salesInvoiceId, $invoiceNo) {
+            $balance = StockBalance::query()->firstOrCreate(
+                ['branch_id' => $branchId, 'location_id' => $locationId, 'part_id' => $partId],
+                ['quantity' => 0, 'reserved_qty' => 0, 'avg_cost' => 0]
+            );
+
+            $available = (float) $balance->quantity - (float) $balance->reserved_qty;
+            if ($available < $quantity) {
+                $part = Part::find($partId);
+                throw new \RuntimeException('Insufficient available stock for: '.($part?->part_number ?? $partId));
+            }
+
+            $balance->increment('reserved_qty', $quantity);
+
+            StockMovement::create([
+                'branch_id' => $branchId,
+                'location_id' => $locationId,
+                'part_id' => $partId,
+                'movement_type' => 'reserve',
+                'reference_type' => SalesInvoice::class,
+                'reference_id' => $salesInvoiceId,
+                'reference_no' => $invoiceNo,
+                'quantity_in' => 0,
+                'quantity_out' => 0,
+                'unit_cost' => $balance->avg_cost,
+                'balance_after' => $balance->quantity,
+                'remarks' => 'Reserved '.$quantity,
+                'movement_date' => now(),
+            ]);
+
+            return $balance->fresh();
+        });
+    }
+
+    public function releaseReservation(
+        int $branchId,
+        int $locationId,
+        int $partId,
+        float $quantity,
+        ?int $salesInvoiceId = null,
+        ?string $invoiceNo = null
+    ): void {
+        DB::transaction(function () use ($branchId, $locationId, $partId, $quantity, $salesInvoiceId, $invoiceNo) {
+            $balance = StockBalance::query()
+                ->where('branch_id', $branchId)
+                ->where('location_id', $locationId)
+                ->where('part_id', $partId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $balance) {
+                return;
+            }
+
+            $release = min($quantity, (float) $balance->reserved_qty);
+            if ($release <= 0) {
+                return;
+            }
+
+            $balance->decrement('reserved_qty', $release);
+
+            StockMovement::create([
+                'branch_id' => $branchId,
+                'location_id' => $locationId,
+                'part_id' => $partId,
+                'movement_type' => 'release_reserve',
+                'reference_type' => $salesInvoiceId ? SalesInvoice::class : null,
+                'reference_id' => $salesInvoiceId,
+                'reference_no' => $invoiceNo,
+                'quantity_in' => 0,
+                'quantity_out' => 0,
+                'unit_cost' => $balance->avg_cost,
+                'balance_after' => $balance->quantity,
+                'remarks' => 'Released reservation '.$release,
+                'movement_date' => now(),
+            ]);
+        });
     }
 
     public function adjustStock(
@@ -140,6 +243,35 @@ class StockService
         float $quantity,
         int $salesInvoiceId,
         string $invoiceNo,
+        ?int $userId = null,
+        bool $fromReservation = false
+    ): StockBalance {
+        if ($fromReservation) {
+            $this->releaseReservation($branchId, $locationId, $partId, $quantity, $salesInvoiceId, $invoiceNo);
+        }
+
+        $balance = StockBalance::query()
+            ->where('branch_id', $branchId)
+            ->where('location_id', $locationId)
+            ->where('part_id', $partId)
+            ->first();
+
+        $unitCost = $balance?->avg_cost ?? Part::find($partId)?->cost_price ?? 0;
+
+        return $this->adjustStock(
+            $branchId, $locationId, $partId, -$quantity,
+            'sale_issue', SalesInvoice::class, $salesInvoiceId, $invoiceNo,
+            $unitCost, $userId
+        );
+    }
+
+    public function issuePurchaseReturn(
+        int $branchId,
+        int $locationId,
+        int $partId,
+        float $quantity,
+        int $purchaseReturnId,
+        string $returnNo,
         ?int $userId = null
     ): StockBalance {
         $balance = StockBalance::query()
@@ -152,7 +284,7 @@ class StockService
 
         return $this->adjustStock(
             $branchId, $locationId, $partId, -$quantity,
-            'sale_issue', SalesInvoice::class, $salesInvoiceId, $invoiceNo,
+            'purchase_return', PurchaseReturn::class, $purchaseReturnId, $returnNo,
             $unitCost, $userId
         );
     }

@@ -1,4 +1,4 @@
-@php $title = 'Trial Balance'; @endphp
+@php $title = __('modules.trial_balance'); @endphp
 <x-erp-layout>
 <div class="space-y-4">
     <div class="erp-card p-4">

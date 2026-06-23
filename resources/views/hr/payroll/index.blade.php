@@ -1,4 +1,4 @@
-@php $title = 'Payroll'; @endphp
+@php $title = __('modules.payroll'); @endphp
 <x-erp-layout>
 <div class="space-y-4">
     <div class="flex justify-end">

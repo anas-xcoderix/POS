@@ -1,13 +1,14 @@
 @include('components.master-crud', [
-    'title' => 'Customers',
+    'title' => __('modules.customers'),
     'resource' => 'customers',
-    'createLabel' => 'Add Customer',
+    'createLabel' => __('modules.add_customer'),
+    'printUrl' => route('documents.masters.customers.pdf'),
     'columns' => [
-        ['label' => 'Code', 'field' => 'code'],
-        ['label' => 'Name', 'field' => 'name'],
-        ['label' => 'Type', 'field' => 'customer_type'],
-        ['label' => 'Balance', 'field' => 'balance', 'format' => 'money'],
-        ['label' => 'Credit Limit', 'field' => 'credit_limit', 'format' => 'money'],
+        ['label' => __('ui.code'), 'field' => 'code'],
+        ['label' => __('ui.name'), 'field' => 'name'],
+        ['label' => __('ui.type'), 'field' => 'customer_type'],
+        ['label' => __('ui.balance'), 'field' => 'balance', 'format' => 'money'],
+        ['label' => __('pdf.credit_limit'), 'field' => 'credit_limit', 'format' => 'money'],
     ],
     'formFields' => view('customers._form', ['branches' => $branches])->render(),
 ])

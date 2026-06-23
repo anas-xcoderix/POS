@@ -87,6 +87,10 @@
         @apply erp-badge bg-orange-50 text-orange-700 ring-1 ring-orange-100;
     }
 
+    .erp-badge-red {
+        @apply erp-badge bg-red-50 text-red-700 ring-1 ring-red-100;
+    }
+
     .erp-pill {
         @apply inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 shadow-sm;
     }
@@ -125,3 +129,56 @@
 }
 
 [x-cloak] { display: none !important; }
+
+/* LTR sidebar */
+.erp-ltr .erp-sidebar {
+    @apply left-0 border-r border-slate-200;
+}
+
+/* RTL sidebar */
+.erp-rtl .erp-sidebar {
+    @apply right-0 left-auto border-l border-slate-200 border-r-0;
+}
+
+.erp-rtl .erp-sidebar-close {
+    @apply ms-auto me-0;
+}
+
+.erp-ltr .erp-search-wrap .erp-search-icon {
+    @apply left-3 right-auto;
+}
+
+.erp-rtl .erp-search-wrap .erp-search-icon {
+    @apply right-3 left-auto;
+}
+
+.erp-ltr .erp-search-wrap .erp-search-input {
+    @apply pl-10 pr-3;
+}
+
+.erp-rtl .erp-search-wrap .erp-search-input {
+    @apply pr-10 pl-3;
+}
+
+.erp-rtl .erp-table th,
+.erp-rtl .erp-table td {
+    text-align: right;
+}
+
+.erp-rtl .text-right {
+    text-align: left;
+}
+
+.erp-rtl .erp-actions-end {
+    @apply text-left;
+}
+
+.erp-ltr .erp-actions-end {
+    @apply text-right;
+}
+
+@media (max-width: 1023px) {
+    .erp-rtl .erp-sidebar:not(.translate-x-0) {
+        transform: translateX(100%);
+    }
+}

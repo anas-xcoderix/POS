@@ -12,7 +12,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Noto Sans Arabic', 'Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 brand: {
