@@ -71,7 +71,7 @@ class DeliveryNoteController extends Controller
             }
         });
 
-        return redirect()->route('delivery-notes.index')->with('success', 'Delivery note created.');
+        return redirect()->route('delivery-notes.index')->with('success', __('messages.delivery.created'));
     }
 
     public function show(DeliveryNote $deliveryNote): View

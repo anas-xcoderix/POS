@@ -1,4 +1,4 @@
-@php $title = 'Edit Posted Purchase — '.$invoice->invoice_no; @endphp
+@php $title = __('pages.edit_posted.purchase', ['no' => $invoice->invoice_no]); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('purchase-invoices.update-posted', $invoice) }}" class="space-y-6">
     @csrf @method('PUT')

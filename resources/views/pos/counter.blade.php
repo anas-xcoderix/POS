@@ -1,4 +1,4 @@
-@php $title = 'POS — '.$session->session_no; @endphp
+@php $title = __('pages.edit_posted.pos', ['no' => $session->session_no]); @endphp
 <x-erp-layout>
 <div class="grid gap-6 lg:grid-cols-3">
     <div class="lg:col-span-2">

@@ -3,13 +3,13 @@
 <div class="space-y-4">
     <div class="erp-card p-4">
         <form method="GET" class="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <x-ui.form-field label="Branch" name="branch_id" type="select" class="sm:w-64">
-                <option value="">All branches</option>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" class="sm:w-64">
+                <option value="">{{ __('pages.filter.all_branches') }}</option>
                 @foreach($branches as $b)
                     <option value="{{ $b->id }}" @selected($branchId == $b->id)>{{ $b->name }}</option>
                 @endforeach
             </x-ui.form-field>
-            <button class="erp-btn-primary shrink-0">Filter</button>
+            <button class="erp-btn-primary shrink-0">{{ __('ui.filter') }}</button>
         </form>
     </div>
 
@@ -20,7 +20,7 @@
     <div class="erp-card overflow-hidden">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Job No</th><th>Customer</th><th>Vehicle</th><th>Mechanic</th><th>Promised</th><th>Status</th><th class="text-right">Total</th><th></th>
+                <th>Job No</th><th>{{ __('ui.customer') }}</th><th>Vehicle</th><th>Mechanic</th><th>Promised</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('ui.total') }}</th><th></th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)
@@ -35,7 +35,7 @@
                         <td><a href="{{ route('job-cards.show', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">View</a></td>
                     </tr>
                 @empty
-                    <tr><td colspan="8"><x-ui.empty-state title="No WIP jobs" description="All job cards are completed or invoiced." /></td></tr>
+                    <tr><td colspan="8"><x-ui.empty-state title="{{ __('pages.empty.wip') }}" description="{{ __('pages.empty.wip_hint') }}" /></td></tr>
                 @endforelse
             </tbody>
         </table>

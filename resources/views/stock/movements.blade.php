@@ -8,13 +8,13 @@
                     <x-ui.icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input type="text" name="search" value="{{ $search }}" placeholder="Part no or reference..." class="erp-input !mt-0 pl-10">
                 </div>
-                <x-ui.form-field label="Type" name="movement_type" type="select" class="sm:w-48">
+                <x-ui.form-field label="{{ __('ui.type') }}" name="movement_type" type="select" class="sm:w-48">
                     <option value="">All types</option>
                     @foreach(['purchase_receive','sale_issue','sale_return','transfer_in','transfer_out','adjustment'] as $type)
                         <option value="{{ $type }}" @selected($movementType === $type)>{{ str_replace('_', ' ', ucfirst($type)) }}</option>
                     @endforeach
                 </x-ui.form-field>
-                <button class="erp-btn-primary shrink-0">Filter</button>
+                <button class="erp-btn-primary shrink-0">{{ __('ui.filter') }}</button>
             </form>
             <div class="flex gap-2">
                 <a href="{{ route('stock.adjustment') }}" class="erp-btn-secondary">Stock Adjustment</a>
@@ -25,7 +25,7 @@
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Date</th><th>Type</th><th>Part</th><th>Branch</th><th>Location</th><th>In</th><th>Out</th><th>Balance</th><th>Reference</th>
+                <th>{{ __('ui.date') }}</th><th>Type</th><th>Part</th><th>Branch</th><th>Location</th><th>In</th><th>Out</th><th>{{ __('ui.balance') }}</th><th>Reference</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)

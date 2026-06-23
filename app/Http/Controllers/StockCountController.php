@@ -62,7 +62,7 @@ class StockCountController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('stock-counts.index')->with('success', 'Stock count session saved.');
+        return redirect()->route('stock-counts.index')->with('success', __('messages.stock_count.saved'));
     }
 
     public function show(StockCountSession $stockCount): View
@@ -80,6 +80,6 @@ class StockCountController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Count posted — variances adjusted.');
+        return back()->with('success', __('messages.stock_count.posted'));
     }
 }

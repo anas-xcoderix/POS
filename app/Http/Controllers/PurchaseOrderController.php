@@ -100,6 +100,6 @@ class PurchaseOrderController extends Controller
         }
 
         return redirect()->route('purchase-invoices.index')
-            ->with('success', 'Purchase invoice '.$invoice->invoice_no.' created from PO.');
+            ->with('success', __('messages.purchase_order.converted', ['no' => $invoice->invoice_no]));
     }
 }

@@ -35,7 +35,7 @@
         <div class="border-b border-slate-100 bg-slate-50 px-5 py-3 font-bold">Vehicle Istimara</div>
         <table class="erp-table min-w-full">
             <thead><tr>
-                <th>Plate</th><th>Customer</th><th>Make / Model</th><th>Istimara Expiry</th>
+                <th>Plate</th><th>{{ __('ui.customer') }}</th><th>Make / Model</th><th>Istimara Expiry</th>
             </tr></thead>
             <tbody>
                 @forelse($vehicles as $veh)

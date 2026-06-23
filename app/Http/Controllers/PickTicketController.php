@@ -41,7 +41,7 @@ class PickTicketController extends Controller
         }
 
         return redirect()->route('pick-tickets.show', $ticket)
-            ->with('success', 'Pick ticket '.$ticket->pick_no.' created.');
+            ->with('success', __('messages.pick.created', ['no' => $ticket->pick_no]));
     }
 
     public function show(PickTicket $pickTicket): View

@@ -7,7 +7,7 @@
                 <h2 class="text-xl font-bold text-slate-900">{{ $part->part_number }}</h2>
                 <p class="text-sm text-slate-500">{{ $part->brand?->name }} · {{ $part->description_en }}</p>
             </div>
-            <a href="{{ route('parts.index') }}" class="erp-btn-secondary shrink-0">Back to Parts</a>
+            <a href="{{ route('parts.index') }}" class="erp-btn-secondary shrink-0">{{ __('pages.actions.back_to_parts') }}</a>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
             <div class="overflow-x-auto">
                 <table class="erp-table min-w-full">
                     <thead class="bg-slate-50/80"><tr>
-                        <th>Component</th><th class="text-right">Qty</th><th class="text-right">Action</th>
+                        <th>Component</th><th class="text-right">Qty</th><th class="text-right">{{ __('pages.table.action') }}</th>
                     </tr></thead>
                     <tbody>
                         @forelse($kits as $kit)
@@ -40,7 +40,7 @@
                             </tr>
                         @empty
                             <tr><td colspan="3">
-                                <x-ui.empty-state title="No kit components" description="Add parts that make up this kit." />
+                                <x-ui.empty-state title="{{ __('pages.empty.kit_components') }}" description="{{ __('pages.empty.kit_components_hint') }}" />
                             </td></tr>
                         @endforelse
                     </tbody>
@@ -69,7 +69,7 @@
             <div class="overflow-x-auto">
                 <table class="erp-table min-w-full">
                     <thead class="bg-slate-50/80"><tr>
-                        <th>Alternative</th><th>Notes</th><th class="text-right">Action</th>
+                        <th>Alternative</th><th>Notes</th><th class="text-right">{{ __('pages.table.action') }}</th>
                     </tr></thead>
                     <tbody>
                         @forelse($alternatives as $alt)
@@ -88,7 +88,7 @@
                             </tr>
                         @empty
                             <tr><td colspan="3">
-                                <x-ui.empty-state title="No alternatives" description="Add substitute parts for this item." />
+                                <x-ui.empty-state title="{{ __('pages.empty.alternatives') }}" description="{{ __('pages.empty.alternatives_hint') }}" />
                             </td></tr>
                         @endforelse
                     </tbody>

@@ -57,6 +57,6 @@ class AttendanceController extends Controller
         return redirect()->route('attendance.index', [
             'month' => $data['month'],
             'year' => $data['year'],
-        ])->with('success', 'Attendance saved.');
+        ])->with('success', __('messages.attendance.saved'));
     }
 }

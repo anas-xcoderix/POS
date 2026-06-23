@@ -51,7 +51,7 @@ class CurrencyController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
-        return back()->with('success', 'Currency created.');
+        return back()->with('success', __('messages.currency.created'));
     }
 
     public function update(Request $request, Currency $currency): RedirectResponse
@@ -76,18 +76,18 @@ class CurrencyController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
-        return back()->with('success', 'Currency updated.');
+        return back()->with('success', __('messages.currency.updated'));
     }
 
     public function destroy(Currency $currency): RedirectResponse
     {
         if ($currency->is_base) {
-            return back()->with('error', 'Cannot delete the base currency.');
+            return back()->with('error', __('messages.currency.cannot_delete_base'));
         }
 
         $currency->delete();
 
-        return back()->with('success', 'Currency deleted.');
+        return back()->with('success', __('messages.currency.deleted'));
     }
 
     public function setRate(Request $request, Currency $currency): RedirectResponse
@@ -102,6 +102,6 @@ class CurrencyController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Exchange rate updated.');
+        return back()->with('success', __('messages.currency.rate_updated'));
     }
 }

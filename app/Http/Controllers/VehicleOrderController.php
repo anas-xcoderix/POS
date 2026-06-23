@@ -36,7 +36,7 @@ class VehicleOrderController extends Controller
 
         VehicleOrder::create($data);
 
-        return back()->with('success', 'Vehicle order created.');
+        return back()->with('success', __('messages.vehicle.order_created'));
     }
 
     public function update(Request $request, VehicleOrder $vehicleOrder): RedirectResponse
@@ -47,13 +47,13 @@ class VehicleOrderController extends Controller
             'remarks' => 'nullable|string',
         ]));
 
-        return back()->with('success', 'Order updated.');
+        return back()->with('success', __('messages.vehicle.order_updated'));
     }
 
     public function destroy(VehicleOrder $vehicleOrder): RedirectResponse
     {
         $vehicleOrder->delete();
 
-        return back()->with('success', 'Order deleted.');
+        return back()->with('success', __('messages.vehicle.order_deleted'));
     }
 }

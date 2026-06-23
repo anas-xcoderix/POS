@@ -10,8 +10,8 @@
         </h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Entry No" name="entry_no" :value="$entryNo" hint="Auto-generated if left blank" />
-            <x-ui.form-field label="Date" name="entry_date" type="date" :value="date('Y-m-d')" required />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.date') }}" name="entry_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Description" name="description" required class="md:col-span-2 lg:col-span-3" />
@@ -31,7 +31,7 @@
         <div class="overflow-x-auto p-4">
             <table class="erp-table min-w-full">
                 <thead><tr>
-                    <th>Account</th><th>Description</th><th class="text-right">Debit</th><th class="text-right">Credit</th><th></th>
+                    <th>{{ __('pages.table.account') }}</th><th>{{ __('ui.description') }}</th><th class="text-right">Debit</th><th class="text-right">Credit</th><th></th>
                 </tr></thead>
                 <tbody id="linesBody"></tbody>
                 <tfoot class="bg-slate-50">
@@ -48,7 +48,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('journal-entries.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('journal-entries.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary" onclick="return validateJournal()">Post Journal</button>
     </div>
 </form>

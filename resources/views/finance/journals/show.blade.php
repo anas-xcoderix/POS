@@ -16,7 +16,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead><tr>
-                    <th>Account</th><th>Description</th><th class="text-right">Debit</th><th class="text-right">Credit</th>
+                    <th>{{ __('pages.table.account') }}</th><th>{{ __('ui.description') }}</th><th class="text-right">Debit</th><th class="text-right">Credit</th>
                 </tr></thead>
                 <tbody>
                     @foreach($entry->lines as $line)

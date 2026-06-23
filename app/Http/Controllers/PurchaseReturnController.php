@@ -74,7 +74,7 @@ class PurchaseReturnController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('purchase-returns.index')->with('success', 'Purchase return created.');
+        return redirect()->route('purchase-returns.index')->with('success', __('messages.return.purchase_created'));
     }
 
     public function post(PurchaseReturn $purchaseReturn): RedirectResponse
@@ -85,6 +85,6 @@ class PurchaseReturnController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Return posted and stock removed.');
+        return back()->with('success', __('messages.return.purchase_posted'));
     }
 }

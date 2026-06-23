@@ -88,4 +88,7 @@ return [
     'showroom_vehicles' => 'مخزون مركبات الصالة',
     'add_showroom_vehicle' => 'استلام مركبة',
     'showroom_transfers' => 'تحويلات الصالة',
+    'new_cash_book_entry' => 'قيد دفتر نقدية جديد',
+    'register_fixed_asset' => 'تسجيل أصل ثابت',
+    'new_proforma' => 'فاتورة أولية جديدة',
 ];

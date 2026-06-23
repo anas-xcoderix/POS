@@ -1,21 +1,21 @@
-@php $title = 'Stock Batches'; @endphp
+@php $title = __('nav.stock_batches'); @endphp
 <x-erp-layout>
 <div class="erp-card overflow-hidden">
     <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4">
         <form method="GET" class="flex flex-wrap items-end gap-3">
             <x-ui.form-field label="Part" name="part_id" type="select" class="!mb-0">
-                <option value="">All parts</option>
+                <option value="">{{ __('pages.filter.all_parts') }}</option>
                 @foreach($parts as $p)<option value="{{ $p->id }}" @selected($partId == $p->id)>{{ $p->part_number }}</option>@endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Branch" name="branch_id" type="select" class="!mb-0">
-                <option value="">All branches</option>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" class="!mb-0">
+                <option value="">{{ __('pages.filter.all_branches') }}</option>
                 @foreach($branches as $b)<option value="{{ $b->id }}" @selected($branchId == $b->id)>{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Location" name="location_id" type="select" class="!mb-0">
-                <option value="">All locations</option>
+            <x-ui.form-field label="{{ __('ui.location') }}" name="location_id" type="select" class="!mb-0">
+                <option value="">{{ __('pages.filter.all_locations') }}</option>
                 @foreach($locations as $l)<option value="{{ $l->id }}" @selected($locationId == $l->id)>{{ $l->branch?->code }} / {{ $l->code }}</option>@endforeach
             </x-ui.form-field>
-            <button class="erp-btn-secondary">Filter</button>
+            <button class="erp-btn-secondary">{{ __('ui.filter') }}</button>
         </form>
     </div>
     <div class="overflow-x-auto">
@@ -36,7 +36,7 @@
                         <td>{{ $row->received_date?->format('Y-m-d') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="8"><x-ui.empty-state title="No stock batches" /></td></tr>
+                    <tr><td colspan="8"><x-ui.empty-state title="{{ __('pages.empty.stock_batches') }}" /></td></tr>
                 @endforelse
             </tbody>
         </table>

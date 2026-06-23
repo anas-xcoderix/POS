@@ -8,7 +8,7 @@
             <x-ui.form-field label="Job No" name="job_no" :value="$jobNo" required />
             <x-ui.form-field label="Job Date" name="job_date" type="date" :value="date('Y-m-d')" required />
             <x-ui.form-field label="Promised Date" name="promised_date" type="date" />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Customer" name="customer_id" type="select" required id="customerSelect">
@@ -33,7 +33,7 @@
                 <option value="in_progress">In Progress</option>
             </x-ui.form-field>
             <x-ui.form-field label="Customer Complaint" name="complaint" class="md:col-span-2 lg:col-span-3" type="textarea" />
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2 lg:col-span-3" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2 lg:col-span-3" />
         </div>
     </div>
 
@@ -54,7 +54,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('job-cards.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('job-cards.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Job Card</button>
     </div>
 </form>
@@ -75,7 +75,7 @@
 <template id="laborRowTemplate">
     <tr>
         <td><input type="hidden" name="items[__INDEX__][item_type]" value="labor">Labor</td>
-        <td><input type="text" name="items[__INDEX__][description]" placeholder="Service description" required class="erp-input !mt-0"></td>
+        <td><input type="text" name="items[__INDEX__][description]" placeholder="{{ __('pages.job_cards.service_description') }}" required class="erp-input !mt-0"></td>
         <td><input type="number" step="0.01" min="0.01" name="items[__INDEX__][quantity]" value="1" required class="erp-input !mt-0 w-24"></td>
         <td><input type="number" step="0.01" min="0" name="items[__INDEX__][unit_price]" value="0" required class="erp-input !mt-0 w-28"></td>
         <td><button type="button" onclick="this.closest('tr').remove()" class="erp-btn-danger !p-2"><x-ui.icon name="trash" class="h-4 w-4" /></button></td>

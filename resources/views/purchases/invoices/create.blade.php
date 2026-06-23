@@ -6,9 +6,9 @@
         <h3 class="mb-4 text-base font-bold text-slate-900">Invoice Details</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Invoice No" name="invoice_no" :value="$invoiceNo" required />
-            <x-ui.form-field label="Date" name="invoice_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.date') }}" name="invoice_date" type="date" :value="date('Y-m-d')" required />
             <x-ui.form-field label="Vendor Invoice No" name="vendor_invoice_no" />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Vendor" name="vendor_id" type="select" required>
@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('purchase-invoices.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('purchase-invoices.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button class="erp-btn-primary">Save Invoice</button>
     </div>
 </form>

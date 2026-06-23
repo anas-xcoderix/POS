@@ -40,21 +40,21 @@ class PartController extends Controller
     {
         Part::create($request->validate($this->rules()));
 
-        return back()->with('success', 'Part created successfully.');
+        return back()->with('success', __('messages.part.created'));
     }
 
     public function update(Request $request, Part $part): RedirectResponse
     {
         $part->update($request->validate($this->rules($part)));
 
-        return back()->with('success', 'Part updated successfully.');
+        return back()->with('success', __('messages.part.updated'));
     }
 
     public function destroy(Part $part): RedirectResponse
     {
         $part->delete();
 
-        return back()->with('success', 'Part deleted successfully.');
+        return back()->with('success', __('messages.part.deleted'));
     }
 
     protected function rules(?Part $part = null): array

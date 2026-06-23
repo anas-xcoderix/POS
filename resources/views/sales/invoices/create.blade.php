@@ -11,8 +11,8 @@
         <div id="customerCreditInfo" class="mb-4 hidden rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900"></div>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Invoice No" name="invoice_no" :value="$invoiceNo" required />
-            <x-ui.form-field label="Date" name="invoice_date" type="date" :value="date('Y-m-d')" required />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required id="branchSelect">
+            <x-ui.form-field label="{{ __('ui.date') }}" name="invoice_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required id="branchSelect">
                 @foreach($branches as $b)
                     <option value="{{ $b->id }}" @selected(isset($defaultBranchId) && $defaultBranchId == $b->id)>{{ $b->name }}</option>
                 @endforeach
@@ -52,7 +52,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('sales-invoices.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('sales-invoices.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Invoice</button>
     </div>
 </form>

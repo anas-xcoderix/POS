@@ -4,7 +4,7 @@
     <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <form method="GET" class="relative flex-1 sm:max-w-sm">
             <x-ui.icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search return no..." class="erp-input !mt-0 pl-10">
+            <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('pages.search.return') }}" class="erp-input !mt-0 pl-10">
         </form>
         <a href="{{ route('purchase-returns.create') }}" class="erp-btn-primary">
             <x-ui.icon name="plus" class="h-4 w-4" /> New Return
@@ -13,7 +13,7 @@
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Return No</th><th>Vendor</th><th>Date</th><th>Total</th><th>Status</th><th class="text-right">Action</th>
+                <th>Return No</th><th>{{ __('ui.vendor') }}</th><th>{{ __('ui.date') }}</th><th>{{ __('ui.total') }}</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('pages.table.action') }}</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)
@@ -40,7 +40,7 @@
                     </tr>
                 @empty
                     <tr><td colspan="6">
-                        <x-ui.empty-state title="No purchase returns" description="Record vendor returns to remove stock from inventory.">
+                        <x-ui.empty-state title="{{ __('pages.empty.purchase_returns') }}" description="{{ __('pages.empty.purchase_returns_hint') }}">
                             <x-slot:action><a href="{{ route('purchase-returns.create') }}" class="erp-btn-primary">Create Return</a></x-slot:action>
                         </x-ui.empty-state>
                     </td></tr>

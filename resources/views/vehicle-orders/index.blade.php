@@ -15,7 +15,7 @@
             @csrf
             <x-ui.form-field label="Order No" name="order_no" :value="old('order_no', $orderNo)" required />
             <x-ui.form-field label="Order Date" name="order_date" type="date" :value="old('order_date', date('Y-m-d'))" required />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)
                     <option value="{{ $b->id }}" @selected(old('branch_id') == $b->id)>{{ $b->name }}</option>
                 @endforeach
@@ -28,7 +28,7 @@
             <x-ui.form-field label="Vehicle Make" name="vehicle_make" :value="old('vehicle_make')" />
             <x-ui.form-field label="Vehicle Model" name="vehicle_model" :value="old('vehicle_model')" />
             <x-ui.form-field label="Estimated Amount" name="estimated_amount" type="number" :value="old('estimated_amount', 0)" />
-            <x-ui.form-field label="Remarks" name="remarks" :value="old('remarks')" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" :value="old('remarks')" />
             <div class="flex items-end lg:col-span-4">
                 <button type="submit" class="erp-btn-primary">Create Order</button>
             </div>
@@ -42,7 +42,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead class="bg-slate-50/80"><tr>
-                    <th>Order No</th><th>Customer</th><th>Branch</th><th>Date</th><th>Vehicle</th><th class="text-right">Est. Amount</th><th>Status</th><th class="text-right">Actions</th>
+                    <th>Order No</th><th>{{ __('ui.customer') }}</th><th>Branch</th><th>{{ __('ui.date') }}</th><th>Vehicle</th><th class="text-right">Est. Amount</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('ui.actions') }}</th>
                 </tr></thead>
                 <tbody>
                     @forelse($records as $row)

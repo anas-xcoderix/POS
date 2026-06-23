@@ -70,7 +70,7 @@ class PurchaseInvoiceController extends Controller
 
         $this->purchaseService->createPurchaseInvoice($data, $data['items'], $postStock);
 
-        return redirect()->route('purchase-invoices.index')->with('success', 'Purchase invoice created.');
+        return redirect()->route('purchase-invoices.index')->with('success', __('messages.purchase.invoice_created'));
     }
 
     public function post(PurchaseInvoice $purchaseInvoice): RedirectResponse
@@ -81,7 +81,7 @@ class PurchaseInvoiceController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Purchase invoice posted and stock received.');
+        return back()->with('success', __('messages.purchase.invoice_posted'));
     }
 
     public function void(Request $request, PurchaseInvoice $purchaseInvoice): RedirectResponse
@@ -94,7 +94,7 @@ class PurchaseInvoiceController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Purchase invoice voided.');
+        return back()->with('success', __('messages.purchase.invoice_voided'));
     }
 
     public function editPosted(PurchaseInvoice $purchaseInvoice): View
@@ -134,6 +134,6 @@ class PurchaseInvoiceController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('purchase-invoices.index')->with('success', 'Posted purchase invoice updated.');
+        return redirect()->route('purchase-invoices.index')->with('success', __('messages.purchase.invoice_updated'));
     }
 }

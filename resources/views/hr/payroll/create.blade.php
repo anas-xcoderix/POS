@@ -10,12 +10,12 @@
             @endfor
         </x-ui.form-field>
         <x-ui.form-field label="Year" name="period_year" type="number" :value="now()->year" required />
-        <x-ui.form-field label="Branch" name="branch_id" type="select">
-            <option value="">All branches</option>
+        <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select">
+            <option value="">{{ __('pages.filter.all_branches') }}</option>
             @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
         </x-ui.form-field>
         <div class="flex gap-3 pt-2">
-            <a href="{{ route('payroll.index') }}" class="erp-btn-secondary">Cancel</a>
+            <a href="{{ route('payroll.index') }}" class="erp-btn-secondary">{{ __('ui.cancel') }}</a>
             <button type="submit" class="erp-btn-primary">Generate</button>
         </div>
     </form>

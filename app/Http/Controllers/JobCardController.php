@@ -102,7 +102,7 @@ class JobCardController extends Controller
         }
 
         return redirect()->route('sales-invoices.index')
-            ->with('success', 'Job card converted to invoice '.$invoice->invoice_no);
+            ->with('success', __('messages.job_card.converted', ['no' => $invoice->invoice_no]));
     }
 
     protected function validateJobCard(Request $request): array

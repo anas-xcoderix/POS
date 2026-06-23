@@ -41,7 +41,7 @@
                         </tr>
                     @empty
                         <tr><td colspan="5">
-                            <x-ui.empty-state title="No count lines" description="This session has no items." />
+                            <x-ui.empty-state title="{{ __('pages.empty.count_lines') }}" description="{{ __('pages.empty.count_lines_hint') }}" />
                         </td></tr>
                     @endforelse
                 </tbody>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-        <a href="{{ route('stock-counts.index') }}" class="erp-btn-secondary text-center">Back to Counts</a>
+        <a href="{{ route('stock-counts.index') }}" class="erp-btn-secondary text-center">{{ __('pages.actions.back_to_counts') }}</a>
         @if($session->status === 'draft')
             <form method="POST" action="{{ route('stock-counts.post', $session) }}" onsubmit="return confirm('Post variances and adjust stock?')">
                 @csrf

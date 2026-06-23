@@ -95,6 +95,6 @@ class StockController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('stock.movements')->with('success', 'Stock adjusted successfully.');
+        return redirect()->route('stock.movements')->with('success', __('messages.stock.adjusted'));
     }
 }

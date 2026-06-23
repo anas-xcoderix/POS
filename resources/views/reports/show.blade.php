@@ -72,7 +72,7 @@
             <a href="{{ route('reports.index', ['locale' => $locale]) }}" class="erp-btn-secondary text-sm">{{ $isAr ? 'كل التقارير' : 'All Reports' }}</a>
             <a href="{{ route('reports.show', array_merge(['report' => $report], $query, ['locale' => 'en'])) }}" class="erp-btn-ghost text-sm">EN</a>
             <a href="{{ route('reports.show', array_merge(['report' => $report], $query, ['locale' => 'ar'])) }}" class="erp-btn-ghost text-sm">عربي</a>
-            <a href="{{ route('reports.pdf', array_merge(['report' => $report], $query)) }}" class="erp-btn-secondary text-sm" target="_blank">PDF</a>
+            <a href="{{ route('reports.pdf', array_merge(['report' => $report], $query)) }}" class="erp-btn-secondary text-sm" target="_blank">{{ __('ui.pdf') }}</a>
             <a href="{{ route('reports.pdf', array_merge(['report' => $report], $query, ['locale' => 'ar'])) }}" class="erp-btn-secondary text-sm" target="_blank">PDF عربي</a>
             <a href="{{ route('reports.csv', array_merge(['report' => $report], $query)) }}" class="erp-btn-primary text-sm">Excel/CSV</a>
         </div>

@@ -81,7 +81,7 @@ class ProformaInvoiceController extends Controller
         }
 
         return redirect()->route('sales-invoices.index')
-            ->with('success', 'Proforma converted to invoice '.$invoice->invoice_no);
+            ->with('success', __('messages.proforma.converted', ['no' => $invoice->invoice_no]));
     }
 
     protected function validateProforma(Request $request): array

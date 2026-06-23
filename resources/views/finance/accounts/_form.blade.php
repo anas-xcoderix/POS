@@ -13,4 +13,4 @@
     @endforeach
 </x-ui.form-field>
 <x-ui.form-field label="Opening Balance" name="opening_balance" type="number" step="0.01" value="0" />
-<x-ui.form-field label="Active" name="is_active" type="checkbox">Active account</x-ui.form-field>
+<x-ui.form-field label="{{ __('ui.active') }}" name="is_active" type="checkbox">Active account</x-ui.form-field>

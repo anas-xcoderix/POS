@@ -28,13 +28,13 @@ class FiscalPeriodController extends Controller
 
         $this->fiscalPeriodService->close((int) $data['year'], (int) $data['month'], auth()->id());
 
-        return back()->with('success', 'Period closed.');
+        return back()->with('success', __('messages.fiscal.closed'));
     }
 
     public function reopen(FiscalPeriod $fiscalPeriod): RedirectResponse
     {
         $this->fiscalPeriodService->reopen($fiscalPeriod->year, $fiscalPeriod->month);
 
-        return back()->with('success', 'Period reopened.');
+        return back()->with('success', __('messages.fiscal.reopened'));
     }
 }

@@ -68,7 +68,7 @@ class FixedAssetController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('fixed-assets.index')->with('success', 'Fixed asset registered.');
+        return redirect()->route('fixed-assets.index')->with('success', __('messages.fixed_asset.registered'));
     }
 
     public function show(FixedAsset $fixedAsset): View
@@ -91,6 +91,6 @@ class FixedAssetController extends Controller
             auth()->id()
         );
 
-        return back()->with('success', "Depreciation posted for {$count} asset(s).");
+        return back()->with('success', __('messages.fixed_asset.depreciation_posted', ['count' => $count]));
     }
 }

@@ -88,4 +88,7 @@ return [
     'showroom_vehicles' => 'Showroom Vehicle Stock',
     'add_showroom_vehicle' => 'Receive Vehicle',
     'showroom_transfers' => 'Showroom Transfers',
+    'new_cash_book_entry' => 'New Cash Book Entry',
+    'register_fixed_asset' => 'Register Fixed Asset',
+    'new_proforma' => 'New Proforma',
 ];

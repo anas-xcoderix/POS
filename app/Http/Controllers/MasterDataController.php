@@ -51,7 +51,7 @@ abstract class MasterDataController extends Controller
 
         $this->modelClass()::create($data);
 
-        return back()->with('success', 'Record created successfully.');
+        return back()->with('success', __('messages.master.created'));
     }
 
     public function update(Request $request, int $id): RedirectResponse
@@ -61,14 +61,14 @@ abstract class MasterDataController extends Controller
         $data = $this->normalizeBooleans($data);
         $record->update($data);
 
-        return back()->with('success', 'Record updated successfully.');
+        return back()->with('success', __('messages.master.updated'));
     }
 
     public function destroy(int $id): RedirectResponse
     {
         $this->modelClass()::findOrFail($id)->delete();
 
-        return back()->with('success', 'Record deleted successfully.');
+        return back()->with('success', __('messages.master.deleted'));
     }
 
     protected function searchableColumns(): array

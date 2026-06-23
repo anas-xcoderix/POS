@@ -8,14 +8,14 @@
                     <x-ui.icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input type="text" name="search" value="{{ $search }}" placeholder="Code or name..." class="erp-input !mt-0 pl-10">
                 </div>
-                <x-ui.form-field label="Type" name="account_type" type="select" class="sm:w-44">
+                <x-ui.form-field label="{{ __('ui.type') }}" name="account_type" type="select" class="sm:w-44">
                     <option value="">All types</option>
                     @foreach($accountTypes as $type)
                         <option value="{{ $type }}" @selected($accountType === $type)>{{ ucfirst($type) }}</option>
                     @endforeach
                 </x-ui.form-field>
                 <div class="flex gap-2">
-                    <button class="erp-btn-secondary">Filter</button>
+                    <button class="erp-btn-secondary">{{ __('ui.filter') }}</button>
                     <button type="button" @click="createOpen = true" class="erp-btn-primary">
                         <x-ui.icon name="plus" class="h-4 w-4" /> Add Account
                     </button>
@@ -26,7 +26,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead><tr>
-                    <th>Code</th><th>Name</th><th>Type</th><th>Parent</th><th class="text-right">Balance</th><th>Status</th><th class="text-right">Actions</th>
+                    <th>Code</th><th>Name</th><th>Type</th><th>Parent</th><th class="text-right">{{ __('ui.balance') }}</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('ui.actions') }}</th>
                 </tr></thead>
                 <tbody>
                     @forelse($records as $record)
@@ -61,8 +61,8 @@
             <form method="POST" action="{{ route('accounts.store') }}">@csrf
                 <div class="space-y-4">@include('finance.accounts._form')</div>
                 <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" @click="createOpen = false" class="erp-btn-secondary">Cancel</button>
-                    <button class="erp-btn-primary">Save</button>
+                    <button type="button" @click="createOpen = false" class="erp-btn-secondary">{{ __('ui.cancel') }}</button>
+                    <button class="erp-btn-primary">{{ __('ui.save') }}</button>
                 </div>
             </form>
         </div>
@@ -75,7 +75,7 @@
             <form method="POST" id="accountEditForm">@csrf @method('PUT')
                 <div id="accountEditFields" class="space-y-4">@include('finance.accounts._form')</div>
                 <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" @click="editOpen = false" class="erp-btn-secondary">Cancel</button>
+                    <button type="button" @click="editOpen = false" class="erp-btn-secondary">{{ __('ui.cancel') }}</button>
                     <button class="erp-btn-primary">Update</button>
                 </div>
             </form>

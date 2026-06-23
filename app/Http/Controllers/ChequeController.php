@@ -57,7 +57,7 @@ class ChequeController extends Controller
         $data['created_by'] = auth()->id();
         Cheque::create($data);
 
-        return redirect()->route('cheques.index')->with('success', 'Cheque recorded.');
+        return redirect()->route('cheques.index')->with('success', __('messages.cheque.recorded'));
     }
 
     public function update(Request $request, Cheque $cheque): RedirectResponse
@@ -66,6 +66,6 @@ class ChequeController extends Controller
             'status' => 'required|in:pending,cleared,bounced,cancelled',
         ]));
 
-        return back()->with('success', 'Cheque status updated.');
+        return back()->with('success', __('messages.cheque.status_updated'));
     }
 }

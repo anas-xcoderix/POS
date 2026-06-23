@@ -13,8 +13,8 @@
         </div>
 
         <form method="GET" class="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-end">
-            <x-ui.form-field label="From" name="from" type="date" :value="$from" class="sm:w-44" />
-            <x-ui.form-field label="To" name="to" type="date" :value="$to" class="sm:w-44" />
+            <x-ui.form-field label="{{ __('ui.from') }}" name="from" type="date" :value="$from" class="sm:w-44" />
+            <x-ui.form-field label="{{ __('ui.to') }}" name="to" type="date" :value="$to" class="sm:w-44" />
             <button type="submit" class="erp-btn-secondary">Apply Filter</button>
         </form>
     </div>
@@ -23,7 +23,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead class="bg-slate-50/80"><tr>
-                    <th>Date</th><th>Type</th><th>Reference</th><th class="text-right">Debit</th><th class="text-right">Credit</th><th class="text-right">Balance</th>
+                    <th>{{ __('ui.date') }}</th><th>Type</th><th>Reference</th><th class="text-right">Debit</th><th class="text-right">Credit</th><th class="text-right">{{ __('ui.balance') }}</th>
                 </tr></thead>
                 <tbody>
                     @php $runningBalance = 0; @endphp
@@ -39,7 +39,7 @@
                         </tr>
                     @empty
                         <tr><td colspan="6">
-                            <x-ui.empty-state title="No transactions" description="No invoices or receipts found for this period." />
+                            <x-ui.empty-state title="{{ __('pages.empty.transactions') }}" description="{{ __('pages.empty.customer_transactions_hint') }}" />
                         </td></tr>
                     @endforelse
                 </tbody>

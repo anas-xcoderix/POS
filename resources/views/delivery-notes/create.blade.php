@@ -33,7 +33,7 @@
                     <option value="{{ $inv->id }}" @selected(old('sales_invoice_id', $invoice?->id) == $inv->id)>{{ $inv->invoice_no }}</option>
                 @endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required id="branchSelect">
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required id="branchSelect">
                 @foreach($branches as $b)
                     <option value="{{ $b->id }}" @selected(old('branch_id', $invoice?->branch_id) == $b->id)>{{ $b->name }}</option>
                 @endforeach
@@ -45,7 +45,7 @@
             </x-ui.form-field>
             <x-ui.form-field label="Driver Name" name="driver_name" :value="old('driver_name')" />
             <x-ui.form-field label="Vehicle Plate" name="vehicle_plate" :value="old('vehicle_plate')" />
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2 lg:col-span-3" :value="old('remarks')" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2 lg:col-span-3" :value="old('remarks')" />
         </div>
     </div>
 
@@ -68,7 +68,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('delivery-notes.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('delivery-notes.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Delivery Note</button>
     </div>
 </form>

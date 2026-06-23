@@ -46,7 +46,7 @@ class PayrollController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('payroll.show', $run)->with('success', 'Payroll generated.');
+        return redirect()->route('payroll.show', $run)->with('success', __('messages.payroll.generated'));
     }
 
     public function show(PayrollRun $payroll): View
@@ -64,6 +64,6 @@ class PayrollController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Payroll posted.');
+        return back()->with('success', __('messages.payroll.posted'));
     }
 }

@@ -1,17 +1,17 @@
-@php $title = 'Purchase Invoices'; @endphp
+@php $title = __('modules.purchase_invoices'); @endphp
 <x-erp-layout>
 <div class="erp-card overflow-hidden">
     <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <form method="GET" class="relative flex-1 sm:max-w-sm">
             <x-ui.icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search invoice..." class="erp-input !mt-0 pl-10">
+            <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('pages.search.purchase_invoice') }}" class="erp-input !mt-0 pl-10">
         </form>
         <a href="{{ route('purchase-invoices.create') }}" class="erp-btn-primary"><x-ui.icon name="plus" class="h-4 w-4" /> New Invoice</a>
     </div>
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Invoice</th><th>Vendor</th><th>Date</th><th>Total</th><th>Status</th><th class="text-right">Action</th>
+                <th>{{ __('pages.table.invoice') }}</th><th>{{ __('ui.vendor') }}</th><th>{{ __('ui.date') }}</th><th>{{ __('ui.total') }}</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('pages.table.action') }}</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)
@@ -22,25 +22,25 @@
                         <td class="font-medium">{{ number_format($row->total_amount, 2) }}</td>
                         <td><span class="erp-badge {{ $row->voided_at ? 'erp-badge-red' : ($row->status === 'posted' ? 'erp-badge-green' : 'erp-badge-amber') }}">{{ $row->voided_at ? 'Voided' : ucfirst($row->status) }}</span></td>
                         <td class="text-right space-x-1">
-                            <a href="{{ route('documents.purchase-invoice.pdf', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs" target="_blank">PDF</a>
+                            <a href="{{ route('documents.purchase-invoice.pdf', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs" target="_blank">{{ __('ui.pdf') }}</a>
                             @if($row->voided_at)
                                 <span class="text-xs text-slate-400">—</span>
                             @elseif($row->status !== 'posted')
                                 <form method="POST" action="{{ route('purchase-invoices.post', $row) }}" class="inline">@csrf
-                                    <button class="erp-btn-primary !py-1.5 !px-3 text-xs">Post</button>
+                                    <button class="erp-btn-primary !py-1.5 !px-3 text-xs">{{ __('ui.post') }}</button>
                                 </form>
                             @else
-                                <a href="{{ route('purchase-invoices.edit-posted', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">Edit</a>
-                                <a href="{{ route('purchase-returns.create', ['purchase_invoice_id' => $row->id]) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">Return</a>
-                                <button type="button" onclick="voidPi{{ $row->id }}.showModal()" class="erp-btn-danger !py-1.5 !px-3 text-xs">Void</button>
+                                <a href="{{ route('purchase-invoices.edit-posted', $row) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">{{ __('ui.edit') }}</a>
+                                <a href="{{ route('purchase-returns.create', ['purchase_invoice_id' => $row->id]) }}" class="erp-btn-ghost !py-1.5 !px-3 text-xs">{{ __('pages.actions.return') }}</a>
+                                <button type="button" onclick="voidPi{{ $row->id }}.showModal()" class="erp-btn-danger !py-1.5 !px-3 text-xs">{{ __('ui.void') }}</button>
                                 <dialog id="voidPi{{ $row->id }}" class="rounded-xl p-6 shadow-xl backdrop:bg-slate-900/40">
                                     <form method="POST" action="{{ route('purchase-invoices.void', $row) }}" class="space-y-4">
                                         @csrf
                                         <h4 class="font-bold">Void {{ $row->invoice_no }}</h4>
-                                        <textarea name="void_reason" required class="erp-input" rows="3" placeholder="Reason..."></textarea>
+                                        <textarea name="void_reason" required class="erp-input" rows="3" placeholder="{{ __('pages.actions.reason') }}"></textarea>
                                         <div class="flex gap-2 justify-end">
-                                            <button type="button" onclick="this.closest('dialog').close()" class="erp-btn-secondary">Cancel</button>
-                                            <button class="erp-btn-danger">Confirm Void</button>
+                                            <button type="button" onclick="this.closest('dialog').close()" class="erp-btn-secondary">{{ __('ui.cancel') }}</button>
+                                            <button class="erp-btn-danger">{{ __('pages.actions.confirm_void') }}</button>
                                         </div>
                                     </form>
                                 </dialog>
@@ -48,7 +48,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6"><x-ui.empty-state title="No purchase invoices" /></td></tr>
+                    <tr><td colspan="6"><x-ui.empty-state title="{{ __('pages.empty.purchase_invoices') }}" /></td></tr>
                 @endforelse
             </tbody>
         </table>

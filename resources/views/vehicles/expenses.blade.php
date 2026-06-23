@@ -10,7 +10,7 @@
                     @if($vehicle->customer) · {{ $vehicle->customer->name }} @endif
                 </p>
             </div>
-            <a href="{{ route('vehicles.index') }}" class="erp-btn-secondary">Back to Vehicles</a>
+            <a href="{{ route('vehicles.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_vehicles') }}</a>
         </div>
     </div>
 
@@ -21,15 +21,15 @@
         </h3>
         <form method="POST" action="{{ route('vehicles.expenses.store', $vehicle) }}" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
             @csrf
-            <x-ui.form-field label="Date" name="expense_date" type="date" :value="old('expense_date', date('Y-m-d'))" required />
-            <x-ui.form-field label="Type" name="expense_type" type="select" required>
+            <x-ui.form-field label="{{ __('ui.date') }}" name="expense_date" type="date" :value="old('expense_date', date('Y-m-d'))" required />
+            <x-ui.form-field label="{{ __('ui.type') }}" name="expense_type" type="select" required>
                 @foreach(['fuel', 'maintenance', 'insurance', 'registration', 'toll', 'other'] as $type)
                     <option value="{{ $type }}" @selected(old('expense_type') === $type)>{{ ucfirst($type) }}</option>
                 @endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Amount" name="amount" type="number" :value="old('amount')" required />
+            <x-ui.form-field label="{{ __('ui.amount') }}" name="amount" type="number" :value="old('amount')" required />
             <x-ui.form-field label="Reference No" name="reference_no" :value="old('reference_no')" />
-            <x-ui.form-field label="Remarks" name="remarks" :value="old('remarks')" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" :value="old('remarks')" />
             <div class="flex items-end lg:col-span-5">
                 <button type="submit" class="erp-btn-primary">Record Expense</button>
             </div>
@@ -43,7 +43,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead class="bg-slate-50/80"><tr>
-                    <th>Date</th><th>Type</th><th>Reference</th><th>Remarks</th><th class="text-right">Amount</th><th class="text-right">Action</th>
+                    <th>{{ __('ui.date') }}</th><th>Type</th><th>Reference</th><th>Remarks</th><th class="text-right">Amount</th><th class="text-right">{{ __('pages.table.action') }}</th>
                 </tr></thead>
                 <tbody>
                     @php $total = 0; @endphp
@@ -71,7 +71,7 @@
                 @if($records->isNotEmpty())
                     <tfoot class="bg-slate-50/50">
                         <tr>
-                            <td colspan="4" class="text-right font-semibold">Total</td>
+                            <td colspan="4" class="text-right font-semibold">{{ __('ui.total') }}</td>
                             <td class="text-right text-lg font-bold text-slate-900">{{ number_format($total, 2) }}</td>
                             <td></td>
                         </tr>

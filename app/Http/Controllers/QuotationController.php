@@ -80,7 +80,7 @@ class QuotationController extends Controller
         }
 
         return redirect()->route('sales-invoices.index')
-            ->with('success', 'Quotation converted to invoice '.$invoice->invoice_no);
+            ->with('success', __('messages.quotation.converted', ['no' => $invoice->invoice_no]));
     }
 
     protected function validateQuotation(Request $request): array

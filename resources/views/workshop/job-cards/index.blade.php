@@ -3,14 +3,14 @@
 <div class="space-y-4">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <form method="GET" class="flex flex-wrap gap-2">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Job no..." class="erp-input !mt-0 w-48">
+            <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('pages.search.job') }}" class="erp-input !mt-0 w-48">
             <select name="status" class="erp-input !mt-0 w-40">
-                <option value="">All statuses</option>
+                <option value="">{{ __('pages.filter.all_statuses') }}</option>
                 @foreach(['open','in_progress','completed','invoiced','cancelled'] as $s)
                     <option value="{{ $s }}" @selected($statusFilter === $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                 @endforeach
             </select>
-            <button class="erp-btn-secondary">Filter</button>
+            <button class="erp-btn-secondary">{{ __('ui.filter') }}</button>
         </form>
         <a href="{{ route('job-cards.create') }}" class="erp-btn-primary">
             <x-ui.icon name="plus" class="h-4 w-4" /> New Job Card
@@ -21,7 +21,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead class="bg-slate-50/80"><tr>
-                    <th>Job No</th><th>Date</th><th>Customer</th><th>Vehicle</th><th>Mechanic</th><th>Status</th><th class="text-right">Total</th><th></th>
+                    <th>Job No</th><th>{{ __('ui.date') }}</th><th>{{ __('ui.customer') }}</th><th>Vehicle</th><th>Mechanic</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('ui.total') }}</th><th></th>
                 </tr></thead>
                 <tbody>
                     @forelse($records as $row)
@@ -38,7 +38,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8"><x-ui.empty-state title="No job cards" description="Create a job card to track workshop work." /></td></tr>
+                        <tr><td colspan="8"><x-ui.empty-state title="{{ __('pages.empty.job_cards') }}" description="{{ __('pages.empty.job_cards_hint') }}" /></td></tr>
                     @endforelse
                 </tbody>
             </table>

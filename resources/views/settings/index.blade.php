@@ -59,7 +59,7 @@
             @csrf
             <x-ui.form-field label="Rule Name" name="name" required />
             <x-ui.form-field label="Rule Type" name="rule_type" type="select" required>
-                <option value="customer">Customer</option>
+                <option value="customer">{{ __('ui.customer') }}</option>
                 <option value="brand">Brand</option>
                 <option value="customer_type">Customer Type</option>
             </x-ui.form-field>

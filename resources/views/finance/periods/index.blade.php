@@ -28,7 +28,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead class="bg-slate-50/80"><tr>
-                    <th>Period</th><th>Status</th><th>Closed At</th><th>Closed By</th><th class="text-right">Action</th>
+                    <th>Period</th><th>{{ __('ui.status') }}</th><th>Closed At</th><th>Closed By</th><th class="text-right">{{ __('pages.table.action') }}</th>
                 </tr></thead>
                 <tbody>
                     @forelse($records as $row)

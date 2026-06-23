@@ -78,6 +78,6 @@ class CashBookController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('cash-book.index')->with('success', 'Cash book entry recorded.');
+        return redirect()->route('cash-book.index')->with('success', __('messages.cashbook.entry_recorded'));
     }
 }

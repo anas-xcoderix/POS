@@ -4,12 +4,12 @@
     <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <x-ui.form-field label="Status" name="status" type="select" class="!mb-0 min-w-[160px]">
-                <option value="">All statuses</option>
+                <option value="">{{ __('pages.filter.all_statuses') }}</option>
                 @foreach(['pending', 'cleared', 'bounced', 'cancelled'] as $s)
                     <option value="{{ $s }}" @selected($status === $s)>{{ ucfirst($s) }}</option>
                 @endforeach
             </x-ui.form-field>
-            <button type="submit" class="erp-btn-secondary !py-2.5">Filter</button>
+            <button type="submit" class="erp-btn-secondary !py-2.5">{{ __('ui.filter') }}</button>
             @if($status)
                 <a href="{{ route('cheques.index') }}" class="erp-btn-ghost text-sm">Clear</a>
             @endif
@@ -21,7 +21,7 @@
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Cheque No</th><th>Type</th><th>Party</th><th>Branch</th><th>Date</th><th>Due</th><th class="text-right">Amount</th><th>Status</th><th class="text-right">Action</th>
+                <th>Cheque No</th><th>Type</th><th>Party</th><th>Branch</th><th>{{ __('ui.date') }}</th><th>Due</th><th class="text-right">Amount</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('pages.table.action') }}</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)

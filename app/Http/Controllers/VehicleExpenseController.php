@@ -33,13 +33,13 @@ class VehicleExpenseController extends Controller
             'created_by' => auth()->id(),
         ]));
 
-        return back()->with('success', 'Expense recorded.');
+        return back()->with('success', __('messages.vehicle.expense_recorded'));
     }
 
     public function destroy(VehicleExpense $vehicleExpense): RedirectResponse
     {
         $vehicleExpense->delete();
 
-        return back()->with('success', 'Expense removed.');
+        return back()->with('success', __('messages.vehicle.expense_removed'));
     }
 }

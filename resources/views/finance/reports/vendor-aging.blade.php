@@ -9,7 +9,7 @@
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead><tr>
-                <th>Vendor</th><th class="text-right">Current</th><th class="text-right">31-60</th><th class="text-right">61-90</th><th class="text-right">90+</th><th class="text-right">Total</th>
+                <th>{{ __('ui.vendor') }}</th><th class="text-right">Current</th><th class="text-right">31-60</th><th class="text-right">61-90</th><th class="text-right">90+</th><th class="text-right">{{ __('ui.total') }}</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)

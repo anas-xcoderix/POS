@@ -77,7 +77,7 @@ class JournalEntryController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('journal-entries.index')->with('success', 'Manual journal posted.');
+        return redirect()->route('journal-entries.index')->with('success', __('messages.journal.posted'));
     }
 
     public function show(JournalEntry $journalEntry): View

@@ -10,14 +10,14 @@
         </h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Transfer No" name="transfer_no" :value="$transferNo" required />
-            <x-ui.form-field label="Date" name="transfer_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.date') }}" name="transfer_date" type="date" :value="date('Y-m-d')" required />
             <x-ui.form-field label="From Branch" name="from_branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="To Branch" name="to_branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2" />
         </div>
     </div>
 
@@ -42,7 +42,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('stock-transfers.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('stock-transfers.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Transfer (Draft)</button>
     </div>
 </form>

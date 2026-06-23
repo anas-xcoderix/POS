@@ -19,13 +19,13 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div class="erp-card p-4"><p class="text-xs text-slate-500">Parts</p><p class="text-xl font-bold">{{ number_format($jobCard->parts_total, 2) }}</p></div>
         <div class="erp-card p-4"><p class="text-xs text-slate-500">Labor</p><p class="text-xl font-bold">{{ number_format($jobCard->labor_total, 2) }}</p></div>
-        <div class="erp-card p-4"><p class="text-xs text-slate-500">Total</p><p class="text-xl font-bold text-orange-600">{{ number_format($jobCard->total_amount, 2) }}</p></div>
+        <div class="erp-card p-4"><p class="text-xs text-slate-500">{{ __('ui.total') }}</p><p class="text-xl font-bold text-orange-600">{{ number_format($jobCard->total_amount, 2) }}</p></div>
     </div>
 
     <div class="erp-card overflow-hidden">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Type</th><th>Description</th><th>Qty</th><th>Unit Price</th><th class="text-right">Line Total</th>
+                <th>Type</th><th>{{ __('ui.description') }}</th><th>Qty</th><th>Unit Price</th><th class="text-right">Line Total</th>
             </tr></thead>
             <tbody>
                 @foreach($jobCard->items as $item)
@@ -51,7 +51,7 @@
                 @endif
                 @if(in_array($jobCard->status, ['open', 'in_progress']))
                     <button name="status" value="completed" class="erp-btn-primary">Mark Completed</button>
-                    <button name="status" value="cancelled" class="erp-btn-danger" onclick="return confirm('Cancel this job card?')">Cancel</button>
+                    <button name="status" value="cancelled" class="erp-btn-danger" onclick="return confirm('Cancel this job card?')">{{ __('ui.cancel') }}</button>
                 @endif
             </form>
         </div>
@@ -59,7 +59,7 @@
 
     @if($jobCard->status !== 'invoiced' && $jobCard->status !== 'cancelled')
         <div class="erp-card p-6">
-            <h3 class="mb-4 text-base font-bold text-slate-900">Convert to Sales Invoice</h3>
+            <h3 class="mb-4 text-base font-bold text-slate-900">{{ __('pages.actions.convert_to_sales_invoice') }}</h3>
             <form method="POST" action="{{ route('job-cards.convert', $jobCard) }}" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 @csrf
                 <x-ui.form-field label="Invoice No" name="invoice_no" :value="$invoiceNo" required />
@@ -77,7 +77,7 @@
                     <option value="posted">Posted</option>
                 </x-ui.form-field>
                 <div class="flex items-end md:col-span-2 lg:col-span-3">
-                    <button type="submit" class="erp-btn-primary">Create Invoice</button>
+                    <button type="submit" class="erp-btn-primary">{{ __('pages.actions.create_invoice') }}</button>
                 </div>
             </form>
         </div>
@@ -87,6 +87,6 @@
         </div>
     @endif
 
-    <a href="{{ route('job-cards.index') }}" class="erp-btn-secondary">Back to Job Cards</a>
+    <a href="{{ route('job-cards.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_job_cards') }}</a>
 </div>
 </x-erp-layout>

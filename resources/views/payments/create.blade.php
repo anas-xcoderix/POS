@@ -24,8 +24,8 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Receipt No" name="receipt_no" :value="$receiptNo" required />
-            <x-ui.form-field label="Date" name="receipt_date" type="date" :value="date('Y-m-d')" required />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.date') }}" name="receipt_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
 
@@ -51,19 +51,19 @@
                 </x-ui.form-field>
             @endif
 
-            <x-ui.form-field label="Amount" name="amount" type="number" :value="old('amount')" required />
+            <x-ui.form-field label="{{ __('ui.amount') }}" name="amount" type="number" :value="old('amount')" required />
             <x-ui.form-field label="Payment Method" name="payment_method" type="select" required>
                 <option value="cash">Cash</option>
                 <option value="bank">Bank Transfer</option>
                 <option value="cheque">Cheque</option>
             </x-ui.form-field>
             <x-ui.form-field label="Reference No" name="reference_no" hint="Cheque no, transfer ref, etc." />
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2 lg:col-span-3" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2 lg:col-span-3" />
         </div>
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('payments.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('payments.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Record Payment</button>
     </div>
 </form>

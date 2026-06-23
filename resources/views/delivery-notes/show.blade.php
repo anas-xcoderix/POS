@@ -35,7 +35,7 @@
         <div class="overflow-x-auto">
             <table class="erp-table min-w-full">
                 <thead class="bg-slate-50/80"><tr>
-                    <th>Part</th><th>Description</th><th class="text-right">Quantity</th>
+                    <th>Part</th><th>{{ __('ui.description') }}</th><th class="text-right">Quantity</th>
                 </tr></thead>
                 <tbody>
                     @forelse($note->items as $item)
@@ -46,7 +46,7 @@
                         </tr>
                     @empty
                         <tr><td colspan="3">
-                            <x-ui.empty-state title="No items" description="This delivery note has no line items." />
+                            <x-ui.empty-state title="{{ __('pages.empty.delivery_items') }}" description="{{ __('pages.empty.delivery_items_hint') }}" />
                         </td></tr>
                     @endforelse
                 </tbody>
@@ -54,6 +54,6 @@
         </div>
     </div>
 
-    <a href="{{ route('delivery-notes.index') }}" class="erp-btn-secondary">Back to Delivery Notes</a>
+    <a href="{{ route('delivery-notes.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_delivery_notes') }}</a>
 </div>
 </x-erp-layout>

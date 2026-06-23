@@ -10,7 +10,7 @@
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>DN No</th><th>Customer</th><th>Branch</th><th>Delivery Date</th><th>Invoice</th><th>Driver</th><th>Status</th><th class="text-right">Action</th>
+                <th>DN No</th><th>{{ __('ui.customer') }}</th><th>Branch</th><th>Delivery Date</th><th>{{ __('pages.table.invoice') }}</th><th>Driver</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('pages.table.action') }}</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)
@@ -42,7 +42,7 @@
                     </tr>
                 @empty
                     <tr><td colspan="8">
-                        <x-ui.empty-state title="No delivery notes" description="Create delivery notes to record outbound shipments.">
+                        <x-ui.empty-state title="{{ __('pages.empty.delivery_notes') }}" description="{{ __('pages.empty.delivery_notes_hint') }}">
                             <x-slot:action>
                                 <a href="{{ route('delivery-notes.create') }}" class="erp-btn-primary">Create Delivery Note</a>
                             </x-slot:action>

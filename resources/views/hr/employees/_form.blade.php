@@ -1,12 +1,12 @@
 <x-ui.form-field label="Employee No" name="employee_no" required />
-<x-ui.form-field label="Branch" name="branch_id" type="select" required>
+<x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
     @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
 </x-ui.form-field>
 <x-ui.form-field label="Department" name="department_id" type="select">
     <option value="">— None —</option>
     @foreach($departments as $d)<option value="{{ $d->id }}">{{ $d->name }}</option>@endforeach
 </x-ui.form-field>
-<x-ui.form-field label="Name" name="name" required />
+<x-ui.form-field label="{{ __('ui.name') }}" name="name" required />
 <x-ui.form-field label="Name (Arabic)" name="name_ar" />
 <x-ui.form-field label="Phone" name="phone" />
 <x-ui.form-field label="Email" name="email" type="email" />
@@ -19,4 +19,4 @@
 <x-ui.form-field label="Aqama Expiry" name="aqama_expiry" type="date" />
 <x-ui.form-field label="License No" name="license_no" />
 <x-ui.form-field label="License Expiry" name="license_expiry" type="date" />
-<x-ui.form-field label="Active" name="is_active" type="checkbox" value="1">Employee is active</x-ui.form-field>
+<x-ui.form-field label="{{ __('ui.active') }}" name="is_active" type="checkbox" value="1">Employee is active</x-ui.form-field>

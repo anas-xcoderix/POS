@@ -28,7 +28,7 @@
             <x-ui.form-field label="Cheque No" name="cheque_no" :value="old('cheque_no')" required />
             <x-ui.form-field label="Cheque Date" name="cheque_date" type="date" :value="old('cheque_date', date('Y-m-d'))" required />
             <x-ui.form-field label="Due Date" name="due_date" type="date" :value="old('due_date')" />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)
                     <option value="{{ $b->id }}" @selected(old('branch_id') == $b->id)>{{ $b->name }}</option>
                 @endforeach
@@ -52,7 +52,7 @@
                 </x-ui.form-field>
             </div>
 
-            <x-ui.form-field label="Amount" name="amount" type="number" :value="old('amount')" required />
+            <x-ui.form-field label="{{ __('ui.amount') }}" name="amount" type="number" :value="old('amount')" required />
             <x-ui.form-field label="Bank Account" name="bank_account_id" type="select" hint="Optional GL bank account">
                 <option value="">— None —</option>
                 @foreach($bankAccounts as $acc)
@@ -65,12 +65,12 @@
                     <option value="{{ $s }}" @selected(old('status', 'pending') === $s)>{{ ucfirst($s) }}</option>
                 @endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2 lg:col-span-3" :value="old('remarks')" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2 lg:col-span-3" :value="old('remarks')" />
         </div>
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('cheques.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('cheques.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Cheque</button>
     </div>
 </form>

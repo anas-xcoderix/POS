@@ -1,4 +1,4 @@
-@php $title = 'New Proforma'; @endphp
+@php $title = __('modules.new_proforma'); @endphp
 <x-erp-layout>
 <form method="POST" action="{{ route('proforma-invoices.store') }}" class="space-y-6">
     @csrf
@@ -6,22 +6,22 @@
         <h3 class="mb-4 text-base font-bold">Proforma Details</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Proforma No" name="proforma_no" :value="$proformaNo" required />
-            <x-ui.form-field label="Date" name="proforma_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.date') }}" name="proforma_date" type="date" :value="date('Y-m-d')" required />
             <x-ui.form-field label="Valid Until" name="valid_until" type="date" />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Customer" name="customer_id" type="select" required>
                 @foreach($customers as $c)<option value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
             </x-ui.form-field>
-            <x-ui.form-field label="Currency" name="currency_id" type="select">
-                <option value="">Base currency</option>
+            <x-ui.form-field label="{{ __('forms.currency') }}" name="currency_id" type="select">
+                <option value="">{{ __('pages.filter.base_currency') }}</option>
                 @foreach($currencies as $cur)<option value="{{ $cur->id }}">{{ $cur->code }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Status" name="status" type="select">
                 <option value="draft">Draft</option><option value="sent">Sent</option>
             </x-ui.form-field>
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2" />
         </div>
     </div>
     <div class="erp-card overflow-hidden">
@@ -37,7 +37,7 @@
         </div>
     </div>
     <div class="flex justify-end gap-3">
-        <a href="{{ route('proforma-invoices.index') }}" class="erp-btn-secondary">Cancel</a>
+        <a href="{{ route('proforma-invoices.index') }}" class="erp-btn-secondary">{{ __('ui.cancel') }}</a>
         <button class="erp-btn-primary">Save Proforma</button>
     </div>
 </form>

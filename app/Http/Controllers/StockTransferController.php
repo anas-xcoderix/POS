@@ -63,7 +63,7 @@ class StockTransferController extends Controller
 
         $this->purchaseService->createStockTransfer($data, $data['items']);
 
-        return redirect()->route('stock-transfers.index')->with('success', 'Stock transfer created.');
+        return redirect()->route('stock-transfers.index')->with('success', __('messages.stock.transfer_created'));
     }
 
     public function complete(StockTransfer $stockTransfer): RedirectResponse
@@ -74,6 +74,6 @@ class StockTransferController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Transfer completed. Stock moved between branches.');
+        return back()->with('success', __('messages.stock.transfer_completed'));
     }
 }

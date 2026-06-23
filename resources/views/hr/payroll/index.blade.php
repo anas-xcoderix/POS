@@ -7,7 +7,7 @@
     <div class="erp-card overflow-hidden">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Payroll No</th><th>Period</th><th>Branch</th><th>Status</th><th class="text-right">Total</th><th></th>
+                <th>Payroll No</th><th>Period</th><th>Branch</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('ui.total') }}</th><th></th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)

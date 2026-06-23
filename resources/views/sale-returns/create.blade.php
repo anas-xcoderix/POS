@@ -10,8 +10,8 @@
         </h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Return No" name="return_no" :value="$returnNo" required />
-            <x-ui.form-field label="Date" name="return_date" type="date" :value="date('Y-m-d')" required />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.date') }}" name="return_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Customer" name="customer_id" type="select" required id="customerSelect">
@@ -53,7 +53,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('sale-returns.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('sale-returns.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Return</button>
     </div>
 </form>

@@ -3,8 +3,8 @@
 <div class="space-y-4">
     <div class="erp-card p-4">
         <form method="GET" class="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <x-ui.form-field label="From" name="from" type="date" :value="$from" />
-            <x-ui.form-field label="To" name="to" type="date" :value="$to" />
+            <x-ui.form-field label="{{ __('ui.from') }}" name="from" type="date" :value="$from" />
+            <x-ui.form-field label="{{ __('ui.to') }}" name="to" type="date" :value="$to" />
             <button class="erp-btn-primary shrink-0">Run Report</button>
             <a href="{{ route('finance.reports.index') }}" class="erp-btn-secondary shrink-0">Back</a>
         </form>

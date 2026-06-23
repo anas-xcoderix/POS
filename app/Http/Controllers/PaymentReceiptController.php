@@ -72,7 +72,7 @@ class PaymentReceiptController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('payments.index')->with('success', 'Payment recorded.');
+        return redirect()->route('payments.index')->with('success', __('messages.payment.recorded'));
     }
 
     public function customerStatement(Request $request, Customer $customer): View

@@ -44,7 +44,7 @@
                 </tbody>
                 <tfoot class="bg-slate-50/50">
                     <tr>
-                        <td colspan="5" class="text-right font-semibold">Total</td>
+                        <td colspan="5" class="text-right font-semibold">{{ __('ui.total') }}</td>
                         <td class="text-right text-lg font-bold text-slate-900">{{ number_format($quotation->total_amount, 2) }}</td>
                     </tr>
                 </tfoot>
@@ -54,7 +54,7 @@
 
     @if($quotation->status !== 'converted')
         <div class="erp-card p-6">
-            <h3 class="mb-4 text-base font-bold text-slate-900">Convert to Sales Invoice</h3>
+            <h3 class="mb-4 text-base font-bold text-slate-900">{{ __('pages.actions.convert_to_sales_invoice') }}</h3>
             <form method="POST" action="{{ route('quotations.convert', $quotation) }}" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 @csrf
                 <x-ui.form-field label="Invoice No" name="invoice_no" :value="$invoiceNo" required />
@@ -74,14 +74,14 @@
                     <option value="posted">Posted — deduct stock</option>
                 </x-ui.form-field>
                 <div class="flex items-end md:col-span-2 lg:col-span-3">
-                    <button type="submit" class="erp-btn-primary">Convert to Invoice</button>
+                    <button type="submit" class="erp-btn-primary">{{ __('pages.actions.convert_to_invoice') }}</button>
                 </div>
             </form>
         </div>
     @endif
 
     <div>
-        <a href="{{ route('quotations.index') }}" class="erp-btn-secondary">Back to Quotations</a>
+        <a href="{{ route('quotations.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_quotations') }}</a>
     </div>
 </div>
 </x-erp-layout>

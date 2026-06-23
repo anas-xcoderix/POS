@@ -39,7 +39,7 @@
             </tbody>
             <tfoot class="bg-slate-50/50">
                 <tr>
-                    <td colspan="7" class="text-right font-semibold">Total</td>
+                    <td colspan="7" class="text-right font-semibold">{{ __('ui.total') }}</td>
                     <td class="text-right text-lg font-bold">{{ number_format($run->total_amount, 2) }}</td>
                 </tr>
             </tfoot>

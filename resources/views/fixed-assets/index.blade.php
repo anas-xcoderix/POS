@@ -1,9 +1,9 @@
-@php $title = 'Fixed Assets'; @endphp
+@php $title = __('nav.fixed_assets'); @endphp
 <x-erp-layout>
 <div class="erp-card overflow-hidden">
     <div class="flex flex-col gap-4 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <form method="GET" class="relative flex-1 sm:max-w-sm">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search asset..." class="erp-input !mt-0">
+            <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('pages.search.asset') }}" class="erp-input !mt-0">
         </form>
         <div class="flex gap-2">
             <button type="button" onclick="document.getElementById('deprModal').showModal()" class="erp-btn-secondary">Run Depreciation</button>
@@ -13,7 +13,7 @@
     <div class="overflow-x-auto">
         <table class="erp-table min-w-full">
             <thead class="bg-slate-50/80"><tr>
-                <th>Code</th><th>Name</th><th>Category</th><th>Purchase Value</th><th>NBV</th><th>Status</th><th class="text-right">Action</th>
+                <th>Code</th><th>Name</th><th>Category</th><th>Purchase Value</th><th>NBV</th><th>{{ __('ui.status') }}</th><th class="text-right">{{ __('pages.table.action') }}</th>
             </tr></thead>
             <tbody>
                 @forelse($records as $row)
@@ -29,7 +29,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7"><x-ui.empty-state title="No fixed assets" /></td></tr>
+                    <tr><td colspan="7"><x-ui.empty-state title="{{ __('pages.empty.fixed_assets') }}" /></td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -44,7 +44,7 @@
         <x-ui.form-field label="Year" name="year" type="number" :value="date('Y')" required />
         <x-ui.form-field label="Month" name="month" type="number" min="1" max="12" :value="date('n')" required />
         <div class="flex justify-end gap-2">
-            <button type="button" onclick="this.closest('dialog').close()" class="erp-btn-secondary">Cancel</button>
+            <button type="button" onclick="this.closest('dialog').close()" class="erp-btn-secondary">{{ __('ui.cancel') }}</button>
             <button class="erp-btn-primary">Run</button>
         </div>
     </form>

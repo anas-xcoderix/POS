@@ -55,7 +55,7 @@ class SettingsController extends Controller
 
         $this->settings->setMany($data, 'general');
 
-        return back()->with('success', 'Settings saved.');
+        return back()->with('success', __('messages.settings.saved'));
     }
 
     public function storeDiscountRule(Request $request): RedirectResponse
@@ -75,13 +75,13 @@ class SettingsController extends Controller
         $data['is_active'] = $request->boolean('is_active', true);
         DiscountRule::create($data);
 
-        return back()->with('success', 'Discount rule added.');
+        return back()->with('success', __('messages.settings.discount_added'));
     }
 
     public function destroyDiscountRule(DiscountRule $discountRule): RedirectResponse
     {
         $discountRule->delete();
 
-        return back()->with('success', 'Discount rule removed.');
+        return back()->with('success', __('messages.settings.discount_removed'));
     }
 }

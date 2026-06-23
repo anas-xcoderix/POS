@@ -6,9 +6,9 @@
         <h3 class="mb-4 text-base font-bold text-slate-900">Order Details</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="PO No" name="po_no" :value="$poNo" required />
-            <x-ui.form-field label="Date" name="po_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.date') }}" name="po_date" type="date" :value="date('Y-m-d')" required />
             <x-ui.form-field label="Expected Date" name="expected_date" type="date" />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Vendor" name="vendor_id" type="select" required>
@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('purchase-orders.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('purchase-orders.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button class="erp-btn-primary">Save Purchase Order</button>
     </div>
 </form>

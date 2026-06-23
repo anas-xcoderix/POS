@@ -29,7 +29,9 @@ class UserManagementController extends Controller
             'records' => $users,
             'branches' => Branch::where('is_active', true)->orderBy('name')->get(),
             'roles' => array_keys(config('erp.roles', [])),
-            'granularPermissions' => config('erp.granular_permissions', []),
+            'granularPermissions' => collect(config('erp.granular_permissions', []))
+                ->mapWithKeys(fn ($label, $key) => [$key => __("permissions.{$key}")])
+                ->all(),
             'userPermissions' => $userPermissions,
         ]);
     }

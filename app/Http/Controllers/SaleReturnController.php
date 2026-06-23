@@ -74,7 +74,7 @@ class SaleReturnController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('sale-returns.index')->with('success', 'Sale return created.');
+        return redirect()->route('sale-returns.index')->with('success', __('messages.return.sale_created'));
     }
 
     public function post(SaleReturn $saleReturn): RedirectResponse
@@ -85,6 +85,6 @@ class SaleReturnController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Return posted and stock restored.');
+        return back()->with('success', __('messages.return.sale_posted'));
     }
 }

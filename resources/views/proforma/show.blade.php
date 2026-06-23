@@ -10,15 +10,15 @@
             <span class="erp-badge {{ $proforma->status === 'converted' ? 'erp-badge-green' : 'erp-badge-orange' }}">{{ ucfirst($proforma->status) }}</span>
         </div>
         <dl class="mt-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-            <div><dt class="text-slate-500">Date</dt><dd class="font-medium">{{ $proforma->proforma_date?->format('Y-m-d') }}</dd></div>
-            <div><dt class="text-slate-500">Total</dt><dd class="font-medium">{{ number_format($proforma->total_amount, 2) }}</dd></div>
+            <div><dt class="text-slate-500">{{ __('ui.date') }}</dt><dd class="font-medium">{{ $proforma->proforma_date?->format('Y-m-d') }}</dd></div>
+            <div><dt class="text-slate-500">{{ __('ui.total') }}</dt><dd class="font-medium">{{ number_format($proforma->total_amount, 2) }}</dd></div>
             <div><dt class="text-slate-500">Currency</dt><dd class="font-medium">{{ $proforma->currency?->code ?? 'SAR' }}</dd></div>
             <div><dt class="text-slate-500">Valid Until</dt><dd class="font-medium">{{ $proforma->valid_until?->format('Y-m-d') ?? '—' }}</dd></div>
         </dl>
     </div>
     <div class="erp-card overflow-hidden">
         <table class="erp-table min-w-full">
-            <thead class="bg-slate-50/80"><tr><th>Part</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+            <thead class="bg-slate-50/80"><tr><th>Part</th><th>Qty</th><th>Price</th><th>{{ __('ui.total') }}</th></tr></thead>
             <tbody>
                 @foreach($proforma->items as $item)
                     <tr>
@@ -33,14 +33,14 @@
     </div>
     @if($proforma->status !== 'converted')
         <div class="erp-card p-6">
-            <h3 class="mb-4 font-bold">Convert to Sales Invoice</h3>
+            <h3 class="mb-4 font-bold">{{ __('pages.actions.convert_to_sales_invoice') }}</h3>
             <form method="POST" action="{{ route('proforma-invoices.convert', $proforma) }}" class="grid grid-cols-1 gap-4 md:grid-cols-4">
                 @csrf
                 <x-ui.form-field label="Invoice No" name="invoice_no" :value="$invoiceNo" required />
                 <x-ui.form-field label="Invoice Date" name="invoice_date" type="date" :value="date('Y-m-d')" required />
-                <x-ui.form-field label="Type" name="invoice_type" type="select"><option value="cash">Cash</option><option value="credit">Credit</option></x-ui.form-field>
+                <x-ui.form-field label="{{ __('ui.type') }}" name="invoice_type" type="select"><option value="cash">Cash</option><option value="credit">Credit</option></x-ui.form-field>
                 <x-ui.form-field label="Status" name="status" type="select"><option value="posted">Posted</option><option value="draft">Draft</option></x-ui.form-field>
-                <div class="md:col-span-4"><button class="erp-btn-primary">Convert to Invoice</button></div>
+                <div class="md:col-span-4"><button class="erp-btn-primary">{{ __('pages.actions.convert_to_invoice') }}</button></div>
             </form>
         </div>
     @endif

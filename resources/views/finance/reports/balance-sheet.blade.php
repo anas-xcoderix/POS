@@ -24,7 +24,7 @@
                     @endforelse
                 </div>
                 <div class="border-t border-slate-200 bg-slate-50 px-5 py-3 flex justify-between font-bold">
-                    <span>Total</span>
+                    <span>{{ __('ui.total') }}</span>
                     <span>{{ number_format(collect($$key)->sum('balance'), 2) }}</span>
                 </div>
             </div>

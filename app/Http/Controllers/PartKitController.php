@@ -35,7 +35,7 @@ class PartKitController extends Controller
             ['quantity' => $data['quantity']]
         );
 
-        return back()->with('success', 'Kit component added.');
+        return back()->with('success', __('messages.kit.component_added'));
     }
 
     public function destroyKit(Part $part, PartKit $kit): RedirectResponse
@@ -43,7 +43,7 @@ class PartKitController extends Controller
         abort_unless($kit->kit_part_id === $part->id, 404);
         $kit->delete();
 
-        return back()->with('success', 'Kit component removed.');
+        return back()->with('success', __('messages.kit.component_removed'));
     }
 
     public function storeAlternative(Request $request, Part $part): RedirectResponse
@@ -58,7 +58,7 @@ class PartKitController extends Controller
             ['notes' => $data['notes'] ?? null]
         );
 
-        return back()->with('success', 'Alternative part added.');
+        return back()->with('success', __('messages.kit.alternative_added'));
     }
 
     public function destroyAlternative(Part $part, PartAlternative $alternative): RedirectResponse
@@ -66,6 +66,6 @@ class PartKitController extends Controller
         abort_unless($alternative->part_id === $part->id, 404);
         $alternative->delete();
 
-        return back()->with('success', 'Alternative removed.');
+        return back()->with('success', __('messages.kit.alternative_removed'));
     }
 }

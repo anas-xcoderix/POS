@@ -10,9 +10,9 @@
         </h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <x-ui.form-field label="Quotation No" name="quotation_no" :value="$quotationNo" required />
-            <x-ui.form-field label="Date" name="quotation_date" type="date" :value="date('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.date') }}" name="quotation_date" type="date" :value="date('Y-m-d')" required />
             <x-ui.form-field label="Valid Until" name="valid_until" type="date" />
-            <x-ui.form-field label="Branch" name="branch_id" type="select" required>
+            <x-ui.form-field label="{{ __('ui.branch') }}" name="branch_id" type="select" required>
                 @foreach($branches as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
             </x-ui.form-field>
             <x-ui.form-field label="Customer" name="customer_id" type="select" required>
@@ -23,7 +23,7 @@
                 <option value="sent">Sent</option>
                 <option value="approved">Approved</option>
             </x-ui.form-field>
-            <x-ui.form-field label="Remarks" name="remarks" class="md:col-span-2 lg:col-span-3" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" class="md:col-span-2 lg:col-span-3" />
         </div>
     </div>
 
@@ -48,7 +48,7 @@
     </div>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('quotations.index') }}" class="erp-btn-secondary text-center">Cancel</a>
+        <a href="{{ route('quotations.index') }}" class="erp-btn-secondary text-center">{{ __('ui.cancel') }}</a>
         <button type="submit" class="erp-btn-primary">Save Quotation</button>
     </div>
 </form>

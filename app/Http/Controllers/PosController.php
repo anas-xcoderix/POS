@@ -88,7 +88,7 @@ class PosController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Sale completed: '.$invoice->invoice_no);
+        return back()->with('success', __('messages.pos.sale_completed', ['no' => $invoice->invoice_no]));
     }
 
     public function closeSession(Request $request, PosSession $session): RedirectResponse

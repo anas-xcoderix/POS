@@ -24,7 +24,7 @@
         <pre class="overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs text-slate-100">part_number,description_en,brand_code,oem_no,list_price,price_2,price_3,cost_price
 BRK-001,Brake Pad Set Front,TOY,04465-02220,150,140,130,95
 FLT-002,Oil Filter,TOY,90915-YZZD2,35,32,30,18</pre>
-        <a href="{{ route('parts.index') }}" class="erp-btn-secondary mt-4 inline-flex">Back to Parts</a>
+        <a href="{{ route('parts.index') }}" class="erp-btn-secondary mt-4 inline-flex">{{ __('pages.actions.back_to_parts') }}</a>
     </div>
 </div>
 </x-erp-layout>
