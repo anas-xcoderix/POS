@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseService
 {
-    public function __construct(private StockService $stockService) {}
+    public function __construct(
+        private StockService $stockService,
+        private AccountingService $accountingService,
+    ) {}
 
     public function createPurchaseOrder(array $data, array $items): PurchaseOrder
     {
@@ -38,6 +41,8 @@ class PurchaseService
 
             if ($postStock && $invoice->status === 'posted') {
                 $this->postInvoiceStock($invoice, $data['created_by'] ?? null);
+                $invoice->refresh();
+                $this->accountingService->postPurchaseInvoice($invoice->fresh(['items.part', 'vendor']), $data['created_by'] ?? null);
             }
 
             return $invoice->fresh(['items.part', 'vendor', 'branch', 'purchaseOrder']);
@@ -104,6 +109,8 @@ class PurchaseService
                 $this->updatePoReceivedQuantities($invoice);
                 $this->updatePoStatus($invoice->purchase_order_id);
             }
+
+            $this->accountingService->postPurchaseInvoice($invoice->fresh(['items.part', 'vendor']), $userId);
 
             return $invoice->fresh();
         });

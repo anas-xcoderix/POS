@@ -1,6 +1,6 @@
-# IAAPCO ERP
+# PartFlow
 
-Web-based ERP rebuilt from the IAAPCO desktop Business Management System (VB6 + SQL Server + Crystal Reports).
+Web-based parts & operations platform (inventory, sales, purchase, workshop, finance, HR). Evolved from the legacy IAAPCO desktop ERP.
 
 **Fresh Laravel 11 project** — not based on any other project in `htdocs`.
 
@@ -37,7 +37,7 @@ php artisan serve
 
 Open: `http://localhost:8000`
 
-**Login:** `admin@iaapco.local` / `password`
+**Login:** `admin@gmail.com` / `password`
 
 ## XAMPP
 

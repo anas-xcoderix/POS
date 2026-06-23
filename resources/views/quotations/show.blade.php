@@ -15,7 +15,7 @@
                     @endif
                 </p>
             </div>
-            <span class="erp-badge {{ $quotation->status === 'converted' ? 'erp-badge-green' : 'erp-badge-cyan' }}">
+            <span class="erp-badge {{ $quotation->status === 'converted' ? 'erp-badge-green' : 'erp-badge-orange' }}">
                 {{ ucfirst($quotation->status) }}
             </span>
         </div>

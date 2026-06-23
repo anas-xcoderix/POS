@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Customer;
+use App\Models\Part;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\SaleReturn;
@@ -12,13 +14,22 @@ use Illuminate\Support\Facades\DB;
 
 class SalesService
 {
-    public function __construct(private StockService $stockService) {}
+    public function __construct(
+        private StockService $stockService,
+        private PricingService $pricingService,
+        private TaxService $taxService,
+        private CreditService $creditService,
+        private BranchScopeService $branchScope,
+        private AccountingService $accountingService,
+    ) {}
 
     public function createQuotation(array $data, array $items): Quotation
     {
         return DB::transaction(function () use ($data, $items) {
+            $this->branchScope->assertBranchAccess((int) $data['branch_id']);
+            $customer = Customer::findOrFail($data['customer_id']);
             $quotation = Quotation::create($data);
-            $this->syncQuotationItems($quotation, $items);
+            $this->syncQuotationItems($quotation, $items, $customer, $data['created_by'] ?? null);
             $this->recalculateQuotation($quotation);
 
             return $quotation->fresh(['items.part', 'customer', 'branch']);
@@ -64,12 +75,27 @@ class SalesService
     public function createInvoice(array $data, array $items, bool $postStock = false): SalesInvoice
     {
         return DB::transaction(function () use ($data, $items, $postStock) {
+            $this->branchScope->assertBranchAccess((int) $data['branch_id']);
+            $customer = Customer::findOrFail($data['customer_id']);
+
             $invoice = SalesInvoice::create($data);
-            $this->syncInvoiceItems($invoice, $items);
+            $this->syncInvoiceItems($invoice, $items, $customer, $data['created_by'] ?? null);
             $this->recalculateInvoice($invoice);
+
+            if (($data['invoice_type'] ?? 'cash') === 'credit') {
+                $invoice->refresh();
+                $this->creditService->assertCanCharge(
+                    $customer->fresh(),
+                    (float) $invoice->total_amount - (float) ($data['paid_amount'] ?? 0),
+                    'credit'
+                );
+            }
 
             if ($postStock && $invoice->status === 'posted') {
                 $this->postInvoiceStock($invoice, $data['created_by'] ?? null);
+                $invoice->refresh();
+                $this->creditService->chargeForInvoice($invoice);
+                $this->accountingService->postSalesInvoice($invoice->fresh(['items.part', 'customer']), $data['created_by'] ?? null);
             }
 
             return $invoice->fresh(['items.part', 'customer', 'branch']);
@@ -79,12 +105,16 @@ class SalesService
     public function createSaleReturn(array $data, array $items, bool $postStock = false): SaleReturn
     {
         return DB::transaction(function () use ($data, $items, $postStock) {
+            $this->branchScope->assertBranchAccess((int) $data['branch_id']);
             $return = SaleReturn::create($data);
             $this->syncReturnItems($return, $items);
             $this->recalculateReturn($return);
 
             if ($postStock && $return->status === 'posted') {
                 $this->postReturnStock($return, $data['created_by'] ?? null);
+                $return->refresh();
+                $this->creditService->creditForReturn($return);
+                $this->accountingService->postSaleReturn($return->fresh(['items.part', 'salesInvoice']), $data['created_by'] ?? null);
             }
 
             return $return->fresh(['items.part', 'customer', 'branch', 'salesInvoice']);
@@ -101,6 +131,9 @@ class SalesService
             $return->load('items');
             $this->postReturnStock($return, $userId);
             $return->update(['status' => 'posted']);
+            $return->refresh();
+            $this->creditService->creditForReturn($return);
+            $this->accountingService->postSaleReturn($return->fresh(['items.part', 'salesInvoice']), $userId);
 
             return $return->fresh();
         });
@@ -113,12 +146,36 @@ class SalesService
                 return $invoice;
             }
 
-            $invoice->load('items');
+            $invoice->load(['items', 'customer']);
+            $this->creditService->assertCanCharge(
+                $invoice->customer,
+                (float) $invoice->total_amount - (float) $invoice->paid_amount,
+                $invoice->invoice_type
+            );
+
             $this->postInvoiceStock($invoice, $userId);
             $invoice->update(['status' => 'posted']);
+            $invoice->refresh();
+            $this->creditService->chargeForInvoice($invoice);
+            $this->accountingService->postSalesInvoice($invoice->fresh(['items.part', 'customer']), $userId);
 
             return $invoice->fresh();
         });
+    }
+
+    public function resolveLinePricing(int $partId, ?int $customerId, ?int $userId = null): array
+    {
+        $part = Part::findOrFail($partId);
+        $customer = $customerId ? Customer::find($customerId) : null;
+        $pricing = $this->pricingService->resolveUnitPrice($part, $customer, $userId);
+        $tax = $this->taxService->calculateLine(1, $pricing['unit_price'], $pricing['discount_percent'], null, $part);
+
+        return array_merge($pricing, [
+            'vat_percent' => $tax['vat_percent'],
+            'line_total' => $tax['line_total'],
+            'part_number' => $part->part_number,
+            'description' => $part->description_en,
+        ]);
     }
 
     protected function postReturnStock(SaleReturn $return, ?int $userId = null): void
@@ -144,6 +201,11 @@ class SalesService
     protected function postInvoiceStock(SalesInvoice $invoice, ?int $userId = null): void
     {
         foreach ($invoice->items as $item) {
+            $item->loadMissing('part');
+            if ($item->part?->part_number === 'SVC-LABOR') {
+                continue;
+            }
+
             if (! $item->location_id) {
                 throw new \RuntimeException('Location required for part: '.$item->part_id);
             }
@@ -182,50 +244,72 @@ class SalesService
         $return->update(['total_amount' => $return->items->sum('line_total')]);
     }
 
-    protected function syncQuotationItems(Quotation $quotation, array $items): void
+    protected function syncQuotationItems(Quotation $quotation, array $items, Customer $customer, ?int $userId): void
     {
         $quotation->items()->delete();
 
         foreach ($items as $row) {
-            $lineTotal = (float) $row['quantity'] * (float) $row['unit_price'];
-            $discount = $lineTotal * ((float) ($row['discount_percent'] ?? 0) / 100);
-            $net = $lineTotal - $discount;
-            $vat = $net * ((float) ($row['vat_percent'] ?? 0) / 100);
-
+            $line = $this->buildSalesLine($row, $customer, $userId);
             QuotationItem::create([
                 'quotation_id' => $quotation->id,
                 'part_id' => $row['part_id'],
                 'quantity' => $row['quantity'],
-                'unit_price' => $row['unit_price'],
-                'discount_percent' => $row['discount_percent'] ?? 0,
-                'vat_percent' => $row['vat_percent'] ?? 0,
-                'line_total' => $net + $vat,
+                'unit_price' => $line['unit_price'],
+                'discount_percent' => $line['discount_percent'],
+                'vat_percent' => $line['vat_percent'],
+                'line_total' => $line['line_total'],
             ]);
         }
     }
 
-    protected function syncInvoiceItems(SalesInvoice $invoice, array $items): void
+    protected function syncInvoiceItems(SalesInvoice $invoice, array $items, Customer $customer, ?int $userId): void
     {
         $invoice->items()->delete();
 
         foreach ($items as $row) {
-            $lineTotal = (float) $row['quantity'] * (float) $row['unit_price'];
-            $discount = $lineTotal * ((float) ($row['discount_percent'] ?? 0) / 100);
-            $net = $lineTotal - $discount;
-            $vat = $net * ((float) ($row['vat_percent'] ?? 0) / 100);
-
+            $line = $this->buildSalesLine($row, $customer, $userId);
             SalesInvoiceItem::create([
                 'sales_invoice_id' => $invoice->id,
                 'part_id' => $row['part_id'],
                 'location_id' => $row['location_id'] ?? null,
                 'quantity' => $row['quantity'],
-                'unit_price' => $row['unit_price'],
+                'unit_price' => $line['unit_price'],
                 'unit_cost' => $row['unit_cost'] ?? 0,
-                'discount_percent' => $row['discount_percent'] ?? 0,
-                'vat_percent' => $row['vat_percent'] ?? 0,
-                'line_total' => $net + $vat,
+                'discount_percent' => $line['discount_percent'],
+                'vat_percent' => $line['vat_percent'],
+                'line_total' => $line['line_total'],
             ]);
         }
+    }
+
+    protected function buildSalesLine(array $row, Customer $customer, ?int $userId): array
+    {
+        $part = Part::findOrFail($row['part_id']);
+        $quantity = (float) $row['quantity'];
+
+        if (! empty($row['manual_price'])) {
+            $unitPrice = (float) $row['unit_price'];
+            $discountPercent = (float) ($row['discount_percent'] ?? 0);
+            $discountPercent = $this->pricingService->capDiscountForUser($discountPercent, $userId);
+            $vatPercent = (float) ($row['vat_percent'] ?? $this->taxService->resolveVatPercent($part));
+        } else {
+            $pricing = $this->pricingService->resolveUnitPrice($part, $customer, $userId);
+            $unitPrice = isset($row['unit_price']) && (float) $row['unit_price'] > 0
+                ? (float) $row['unit_price']
+                : $pricing['unit_price'];
+            $discountPercent = (float) ($row['discount_percent'] ?? $pricing['discount_percent']);
+            $discountPercent = $this->pricingService->capDiscountForUser($discountPercent, $userId);
+            $vatPercent = (float) ($row['vat_percent'] ?? $this->taxService->resolveVatPercent($part));
+        }
+
+        $tax = $this->taxService->calculateLine($quantity, $unitPrice, $discountPercent, $vatPercent, $part);
+
+        return [
+            'unit_price' => $unitPrice,
+            'discount_percent' => $discountPercent,
+            'vat_percent' => $tax['vat_percent'],
+            'line_total' => $tax['line_total'],
+        ];
     }
 
     protected function recalculateQuotation(Quotation $quotation): void

@@ -12,8 +12,8 @@ window.initRevenueChart = function (labels, data) {
             labels,
             datasets: [{
                 data,
-                borderColor: '#06b6d4',
-                backgroundColor: 'rgba(6, 182, 212, 0.08)',
+                borderColor: '#f97316',
+                backgroundColor: 'rgba(249, 115, 22, 0.08)',
                 borderWidth: 2.5,
                 fill: true,
                 tension: 0.4,

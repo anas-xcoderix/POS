@@ -11,10 +11,15 @@ class Customer extends Model
     protected $fillable = [
         'code', 'branch_id', 'name', 'name_ar', 'contact_person', 'phone', 'mobile',
         'email', 'address', 'city', 'country', 'vat_no', 'customer_type',
-        'credit_limit', 'balance', 'payment_terms_days', 'is_active',
+        'price_level', 'discount_percent', 'credit_limit', 'balance', 'payment_terms_days', 'is_active',
     ];
 
     protected $casts = ['is_active' => 'boolean'];
+
+    public function availableCredit(): ?float
+    {
+        return app(\App\Services\CreditService::class)->availableCredit($this);
+    }
 
     public function branch(): BelongsTo
     {

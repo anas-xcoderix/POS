@@ -6,108 +6,160 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }} @isset($title) — {{ $title }} @endisset</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('scripts')
 </head>
-<body class="font-sans bg-[#f4f6f8]" x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false">
+<body class="font-sans bg-gray-50" x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" @close-sidebar.window="sidebarOpen = false">
 
-<div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" @click="sidebarOpen = false"></div>
+{{-- Mobile overlay --}}
+<div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-slate-900/40 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
 
 <div class="flex min-h-screen">
-    {{-- Icon sidebar --}}
-    <aside class="fixed inset-y-0 left-0 z-50 flex w-[76px] flex-col border-r border-slate-800/50 bg-[#1a1d21] transition-transform duration-300 lg:static lg:translate-x-0"
+    {{-- Sidebar --}}
+    <aside class="fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0"
            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
-        <div class="flex h-16 items-center justify-center border-b border-slate-800/80">
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 text-sm font-bold text-white shadow-lg shadow-cyan-500/30">
-                IA
+        <div class="flex h-16 shrink-0 items-center gap-3 border-b border-slate-100 px-5">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 text-sm font-bold text-white shadow-sm">
+                PF
             </div>
+            <div class="min-w-0">
+                <p class="truncate text-sm font-bold text-slate-900">{{ config('app.name', 'PartFlow') }}</p>
+                <p class="truncate text-xs text-slate-500">Parts & Operations</p>
+            </div>
+            <button type="button" class="ml-auto rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = false">
+                <x-ui.icon name="x" class="h-5 w-5" />
+            </button>
         </div>
 
-        <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-            <x-ui.nav-item route="dashboard" icon="dashboard" label="Dashboard" />
-            <x-ui.nav-item route="parts.index" icon="box" label="Parts" />
-            <x-ui.nav-item route="stock.index" icon="box" label="Stock" />
-            <x-ui.nav-item route="stock.movements" icon="document" label="Movements" />
-            <x-ui.nav-item route="quotations.index" icon="document" label="Quotes" />
-            <x-ui.nav-item route="sales-invoices.index" icon="document" label="Sales" />
-            <x-ui.nav-item route="sale-returns.index" icon="document" label="Returns" />
-            <x-ui.nav-item route="stock-transfers.index" icon="truck" label="Transfers" />
-            <x-ui.nav-item route="purchase-orders.index" icon="cart" label="Purchase" />
-            <x-ui.nav-item route="customers.index" icon="users" label="Customers" />
-            <x-ui.nav-item route="vendors.index" icon="truck" label="Vendors" />
-            <x-ui.nav-item route="branches.index" icon="building" label="Branches" />
-            <x-ui.nav-item route="locations.index" icon="map-pin" label="Locations" />
+        <nav class="flex-1 overflow-y-auto px-3 py-2">
+            <x-ui.sidebar-section title="Main" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="dashboard" icon="dashboard" label="Dashboard" />
+            </div>
+
+            <x-ui.sidebar-section title="Inventory" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="parts.index" icon="box" label="Parts Master" />
+                <x-ui.sidebar-link route="stock.index" icon="box" label="Stock" />
+                <x-ui.sidebar-link route="stock.movements" icon="document" label="Movements" />
+                <x-ui.sidebar-link route="stock-transfers.index" icon="truck" label="Transfers" />
+            </div>
+
+            <x-ui.sidebar-section title="Sales" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="quotations.index" icon="document" label="Quotations" />
+                <x-ui.sidebar-link route="sales-invoices.index" icon="document" label="Sales Invoices" />
+                <x-ui.sidebar-link route="sale-returns.index" icon="document" label="Sale Returns" />
+                <x-ui.sidebar-link route="customers.index" icon="users" label="Customers" />
+            </div>
+
+            <x-ui.sidebar-section title="Purchase" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="purchase-orders.index" icon="cart" label="Purchase Orders" />
+                <x-ui.sidebar-link route="purchase-invoices.index" icon="document" label="Purchase Invoices" />
+                <x-ui.sidebar-link route="vendors.index" icon="truck" label="Vendors" />
+            </div>
+
+            <x-ui.sidebar-section title="Reports" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="reports.index" icon="document" label="Reports Center" />
+            </div>
+
+            <x-ui.sidebar-section title="Finance" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="accounts.index" icon="document" label="Chart of Accounts" />
+                <x-ui.sidebar-link route="journal-entries.index" icon="document" label="Journal Entries" />
+                <x-ui.sidebar-link route="finance.reports.index" icon="document" label="Reports" />
+            </div>
+
+            <x-ui.sidebar-section title="Workshop" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="job-cards.index" icon="truck" label="Job Cards" />
+                <x-ui.sidebar-link route="vehicles.index" icon="truck" label="Vehicles" />
+                <x-ui.sidebar-link route="workshop.reports.wip" icon="document" label="WIP Report" />
+            </div>
+
+            <x-ui.sidebar-section title="HR" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="employees.index" icon="users" label="Employees" />
+                <x-ui.sidebar-link route="departments.index" icon="building" label="Departments" />
+                <x-ui.sidebar-link route="attendance.index" icon="document" label="Attendance" />
+                <x-ui.sidebar-link route="payroll.index" icon="document" label="Payroll" />
+                <x-ui.sidebar-link route="hr.reports.expiring-documents" icon="document" label="Expiring Docs" />
+            </div>
+
+            <x-ui.sidebar-section title="Masters" />
+            <div class="space-y-0.5">
+                <x-ui.sidebar-link route="branches.index" icon="building" label="Branches" />
+                <x-ui.sidebar-link route="locations.index" icon="map-pin" label="Locations" />
+                <x-ui.sidebar-link route="brands.index" icon="tag" label="Brands" />
+                <x-ui.sidebar-link route="origins.index" icon="globe" label="Origins" />
+                <x-ui.sidebar-link route="franchises.index" icon="globe" label="Franchises" />
+            </div>
+
+            @if(auth()->user()?->role === 'admin')
+                <x-ui.sidebar-section title="System" />
+                <div class="space-y-0.5">
+                    <x-ui.sidebar-link route="settings.index" icon="cog" label="Settings" />
+                    <x-ui.sidebar-link route="users.index" icon="users" label="Users & Roles" />
+                </div>
+            @endif
         </nav>
 
-        <div class="border-t border-slate-800/80 p-3">
+        <div class="border-t border-slate-100 p-3">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" title="Sign out" class="erp-sidebar-icon-inactive mx-auto w-full">
-                    <x-ui.icon name="logout" class="h-5 w-5" />
+                <button type="submit" class="erp-sidebar-link-inactive w-full">
+                    <x-ui.icon name="logout" class="h-5 w-5 text-slate-400" />
+                    <span>Sign Out</span>
                 </button>
             </form>
         </div>
     </aside>
 
-    {{-- Main --}}
-    <div class="flex min-w-0 flex-1 flex-col lg:pl-0">
-        {{-- Top bar --}}
-        <header class="sticky top-0 z-30 border-b border-slate-200/60 bg-[#f4f6f8]/90 backdrop-blur-md">
-            <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                <div class="flex items-center gap-3">
-                    <button type="button" class="erp-btn-secondary !rounded-xl !p-2.5 lg:hidden" @click="sidebarOpen = true">
+    {{-- Main content --}}
+    <div class="flex min-w-0 flex-1 flex-col">
+        <header class="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+                <div class="flex min-w-0 items-center gap-3">
+                    <button type="button" class="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50 lg:hidden" @click="sidebarOpen = true">
                         <x-ui.icon name="menu" class="h-5 w-5" />
                     </button>
-                    <div>
-                        <div class="flex flex-wrap items-center gap-3">
-                            <h1 class="text-xl font-bold text-slate-900">{{ $title ?? 'Dashboard' }}</h1>
-                            @if(request()->routeIs('dashboard'))
-                                <span class="erp-badge-cyan">Sales: {{ \App\Models\SalesInvoice::count() }}</span>
-                            @endif
-                        </div>
+                    <div class="min-w-0">
+                        <h1 class="truncate text-lg font-bold text-slate-900 sm:text-xl">{{ $title ?? 'Dashboard' }}</h1>
+                        <p class="hidden text-xs text-slate-500 sm:block">
+                            Home <span class="mx-1 text-slate-300">/</span> {{ $title ?? 'Dashboard' }}
+                        </p>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                    @if(request()->routeIs('dashboard'))
-                        <span class="erp-pill hidden sm:inline-flex">
-                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            {{ now()->subDays(29)->format('d M y') }} - {{ now()->format('d M y') }}
-                        </span>
-                    @endif
+                    <a href="{{ route('sales-invoices.create') }}" class="erp-btn-primary !py-2 !px-3 text-xs sm:text-sm">
+                        <x-ui.icon name="plus" class="h-4 w-4" />
+                        <span class="hidden sm:inline">New Sale</span>
+                        <span class="sm:hidden">Sale</span>
+                    </a>
 
-                    <div class="flex items-center gap-2">
-                        <div class="hidden h-9 w-9 items-center justify-center rounded-full bg-white text-xs font-bold text-slate-600 shadow-sm ring-1 ring-slate-100 sm:flex">
+                    <div class="hidden items-center gap-2 sm:flex">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-600">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
-                        <div class="hidden h-9 w-9 overflow-hidden rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400 sm:block"></div>
+                        <div class="hidden md:block">
+                            <p class="text-sm font-semibold text-slate-800">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-slate-500">{{ ucfirst(auth()->user()->role) }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            @if(request()->routeIs('dashboard'))
-                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/50 px-4 py-3 sm:px-6 lg:px-8">
-                    <span class="erp-pill sm:hidden">{{ $dateRange ?? now()->format('d M y') }}</span>
-                    <div class="flex flex-wrap gap-2 sm:ml-auto">
-                        <button type="button" class="erp-btn-dark text-sm">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            Export
-                        </button>
-                        <a href="{{ route('sales-invoices.create') }}" class="erp-btn-primary text-sm">
-                            <x-ui.icon name="plus" class="h-4 w-4" /> New Sale
-                        </a>
-                    </div>
-                </div>
-            @endif
-
             @isset($headerAction)
-                <div class="border-t border-slate-200/50 px-4 py-3 sm:px-6 lg:px-8">{{ $headerAction }}</div>
+                <div class="border-t border-slate-100 px-4 py-3 sm:px-6 lg:px-8">{{ $headerAction }}</div>
             @endisset
         </header>
 
-        <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main class="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
             @if(session('success'))
                 <x-ui.alert type="success">{{ session('success') }}</x-ui.alert>
             @endif

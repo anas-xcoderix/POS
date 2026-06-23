@@ -4,7 +4,7 @@
 $styles = match($type) {
     'success' => 'bg-emerald-50 border-emerald-200 text-emerald-800',
     'error' => 'bg-red-50 border-red-200 text-red-800',
-    'info' => 'bg-sky-50 border-sky-200 text-sky-800',
+    'info' => 'bg-orange-50 border-orange-200 text-orange-800',
     default => 'bg-slate-50 border-slate-200 text-slate-800',
 };
 @endphp

@@ -41,7 +41,11 @@ class QuotationController extends Controller
     {
         $data = $this->validateQuotation($request);
         $data['created_by'] = auth()->id();
-        $this->salesService->createQuotation($data, $data['items']);
+        try {
+            $this->salesService->createQuotation($data, $data['items']);
+        } catch (\Throwable $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
 
         return redirect()->route('quotations.index')->with('success', 'Quotation created.');
     }
@@ -93,8 +97,8 @@ class QuotationController extends Controller
             'items.*.part_id' => 'required|exists:parts,id',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.discount_percent' => 'nullable|numeric|min:0',
-            'items.*.vat_percent' => 'nullable|numeric|min:0',
+            'items.*.discount_percent' => 'nullable|numeric|min:0|max:100',
+            'items.*.vat_percent' => 'nullable|numeric|min:0|max:100',
         ]);
     }
 

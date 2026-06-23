@@ -14,6 +14,7 @@ $headerAction = '<a href="#" onclick="document.getElementById(\'createModal\').c
                 </div>
                 <div class="flex gap-2">
                     <button type="submit" class="erp-btn-secondary">Search</button>
+                    <a href="{{ route('parts.import') }}" class="erp-btn-secondary">Import CSV</a>
                     <button type="button" @click="createOpen = true" class="erp-btn-primary">
                         <x-ui.icon name="plus" class="h-4 w-4" /> Add Part
                     </button>

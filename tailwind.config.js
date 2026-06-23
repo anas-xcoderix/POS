@@ -12,10 +12,19 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                brand: {
+                    50: '#fff7ed',
+                    100: '#ffedd5',
+                    500: '#f97316',
+                    600: '#ea580c',
+                    700: '#c2410c',
+                },
             },
             boxShadow: {
-                'soft': '0 2px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05)',
+                soft: '0 2px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05)',
             },
         },
     },

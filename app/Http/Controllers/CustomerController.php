@@ -47,7 +47,10 @@ class CustomerController extends MasterDataController
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
             'customer_type' => 'nullable|string|max:30',
+            'price_level' => 'nullable|integer|in:1,2,3',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
             'credit_limit' => 'nullable|numeric|min:0',
+            'payment_terms_days' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ];
     }

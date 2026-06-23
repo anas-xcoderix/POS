@@ -4,26 +4,27 @@
 
 @layer base {
     body {
-        @apply text-slate-700 antialiased;
+        @apply text-slate-600 antialiased;
     }
 }
 
 @layer components {
     .erp-input {
-        @apply mt-1.5 block w-full rounded-2xl border-0 bg-slate-100 px-4 py-2.5 text-sm text-slate-800 shadow-inner
-               transition focus:bg-white focus:ring-2 focus:ring-cyan-500/30;
+        @apply mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-sm
+               transition focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20;
     }
 
     .erp-label {
-        @apply block text-sm font-medium text-slate-600;
+        @apply block text-sm font-medium text-slate-700;
     }
 
     .erp-btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50;
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition
+               focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50;
     }
 
     .erp-btn-primary {
-        @apply erp-btn bg-cyan-500 text-white hover:bg-cyan-600 focus:ring-cyan-400 shadow-sm shadow-cyan-500/25;
+        @apply erp-btn bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-400 shadow-sm;
     }
 
     .erp-btn-dark {
@@ -31,47 +32,47 @@
     }
 
     .erp-btn-secondary {
-        @apply erp-btn bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 focus:ring-slate-300;
+        @apply erp-btn bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 focus:ring-slate-300 shadow-sm;
     }
 
     .erp-btn-danger {
-        @apply erp-btn text-red-500 hover:bg-red-50 focus:ring-red-300;
+        @apply erp-btn text-red-600 hover:bg-red-50 focus:ring-red-300;
     }
 
     .erp-btn-ghost {
-        @apply erp-btn text-cyan-600 hover:bg-cyan-50 focus:ring-cyan-300;
+        @apply erp-btn text-slate-600 hover:bg-slate-100 focus:ring-slate-300;
     }
 
     .erp-card {
-        @apply rounded-3xl bg-white shadow-sm ring-1 ring-slate-100;
+        @apply rounded-xl bg-white shadow-soft border border-slate-100/80;
     }
 
     .erp-card-soft {
-        @apply rounded-3xl bg-slate-50 ring-1 ring-slate-100;
+        @apply rounded-xl bg-slate-50 border border-slate-100;
     }
 
     .erp-table th {
-        @apply px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-400;
+        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 bg-slate-50/80;
     }
 
     .erp-table td {
-        @apply px-5 py-4 text-sm text-slate-700;
+        @apply px-4 py-3.5 text-sm text-slate-700;
     }
 
     .erp-table tbody tr {
-        @apply border-t border-slate-50 transition hover:bg-slate-50/60;
+        @apply border-t border-slate-100 transition hover:bg-slate-50/80;
     }
 
     .erp-badge {
-        @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+        @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
     }
 
     .erp-badge-green {
-        @apply erp-badge bg-emerald-50 text-emerald-600;
+        @apply erp-badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100;
     }
 
     .erp-badge-amber {
-        @apply erp-badge bg-amber-50 text-amber-600;
+        @apply erp-badge bg-amber-50 text-amber-700 ring-1 ring-amber-100;
     }
 
     .erp-badge-slate {
@@ -79,35 +80,47 @@
     }
 
     .erp-badge-cyan {
-        @apply erp-badge bg-cyan-50 text-cyan-700;
+        @apply erp-badge bg-orange-50 text-orange-700 ring-1 ring-orange-100;
+    }
+
+    .erp-badge-orange {
+        @apply erp-badge bg-orange-50 text-orange-700 ring-1 ring-orange-100;
     }
 
     .erp-pill {
-        @apply inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm ring-1 ring-slate-100;
+        @apply inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 shadow-sm;
     }
 
     .erp-quick-link {
-        @apply flex items-center justify-between rounded-3xl bg-slate-50 px-5 py-4 transition hover:bg-slate-100/80 hover:shadow-sm;
-    }
-
-    .erp-sidebar-icon {
-        @apply relative flex h-11 w-11 items-center justify-center rounded-2xl text-slate-400 transition;
-    }
-
-    .erp-sidebar-icon-active {
-        @apply erp-sidebar-icon bg-cyan-500/15 text-cyan-400;
-    }
-
-    .erp-sidebar-icon-inactive {
-        @apply erp-sidebar-icon hover:bg-slate-800 hover:text-white;
+        @apply flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-4 shadow-sm transition hover:border-orange-200 hover:shadow-md;
     }
 
     .erp-stat-card {
-        @apply erp-card relative overflow-hidden p-6;
+        @apply erp-card relative overflow-hidden p-5 sm:p-6;
     }
 
-    .erp-gradient-feature {
-        @apply rounded-3xl bg-gradient-to-br from-cyan-400 via-teal-400 to-amber-300 p-6 text-white shadow-lg shadow-cyan-500/20;
+    .erp-sidebar-section {
+        @apply px-4 pt-5 pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400;
+    }
+
+    .erp-sidebar-link {
+        @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition;
+    }
+
+    .erp-sidebar-link-active {
+        @apply erp-sidebar-link bg-orange-50 text-orange-600;
+    }
+
+    .erp-sidebar-link-inactive {
+        @apply erp-sidebar-link hover:bg-slate-50 hover:text-slate-900;
+    }
+
+    .erp-hero-card {
+        @apply erp-card relative overflow-hidden p-6 sm:p-8;
+    }
+
+    .erp-feature-card {
+        @apply erp-card overflow-hidden;
     }
 }
 

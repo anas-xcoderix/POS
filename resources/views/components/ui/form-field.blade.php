@@ -15,7 +15,8 @@
     @elseif($type === 'checkbox')
         <label class="mt-2 inline-flex cursor-pointer items-center gap-2.5">
             <input type="checkbox" id="{{ $name }}" name="{{ $name }}" value="1"
-                   class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                   @checked($value === '1' || $value === 1 || $value === true)
+                   class="rounded border-slate-300 text-orange-500 focus:ring-orange-400">
             <span class="text-sm text-slate-600">{{ $slot }}</span>
         </label>
     @else

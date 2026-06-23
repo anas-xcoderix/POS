@@ -31,6 +31,8 @@
                                     @php $val = isset($col['relation']) ? data_get($record, $col['relation'].'.'.$col['field']) : data_get($record, $col['field']); @endphp
                                     @if(($col['type'] ?? '') === 'boolean')
                                         <span class="erp-badge {{ $val ? 'erp-badge-green' : 'erp-badge-slate' }}">{{ $val ? 'Active' : 'Inactive' }}</span>
+                                    @elseif(($col['format'] ?? '') === 'money')
+                                        {{ number_format((float) $val, 2) }}
                                     @else
                                         {{ $val ?: '—' }}
                                     @endif

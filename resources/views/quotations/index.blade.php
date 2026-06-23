@@ -24,7 +24,7 @@
                         <td>{{ $row->valid_until ? \Carbon\Carbon::parse($row->valid_until)->format('M d, Y') : '—' }}</td>
                         <td class="font-medium">{{ number_format($row->total_amount, 2) }}</td>
                         <td>
-                            <span class="erp-badge {{ $row->status === 'converted' ? 'erp-badge-green' : 'erp-badge-cyan' }}">
+                            <span class="erp-badge {{ $row->status === 'converted' ? 'erp-badge-green' : 'erp-badge-orange' }}">
                                 {{ ucfirst($row->status) }}
                             </span>
                         </td>

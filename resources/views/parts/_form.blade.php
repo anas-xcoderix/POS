@@ -14,5 +14,7 @@
 </x-ui.form-field>
 <x-ui.form-field label="Description (EN)" name="description_en" required class="md:col-span-2" />
 <x-ui.form-field label="Description (AR)" name="description_ar" class="md:col-span-2" />
-<x-ui.form-field label="List Price" name="list_price" type="number" step="0.01" value="0" />
-<x-ui.form-field label="Cost Price" name="cost_price" type="number" step="0.01" value="0" />
+            <x-ui.form-field label="List Price" name="list_price" type="number" step="0.01" value="0" />
+            <x-ui.form-field label="Price 2" name="price_2" type="number" step="0.01" value="0" />
+            <x-ui.form-field label="Price 3" name="price_3" type="number" step="0.01" value="0" />
+            <x-ui.form-field label="Cost Price" name="cost_price" type="number" step="0.01" value="0" />

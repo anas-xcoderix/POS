@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Part;
 use App\Models\SalesInvoice;
+use App\Services\BranchScopeService;
 use App\Services\SalesService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,11 +15,15 @@ use Illuminate\View\View;
 
 class SalesInvoiceController extends Controller
 {
-    public function __construct(private SalesService $salesService) {}
+    public function __construct(
+        private SalesService $salesService,
+        private BranchScopeService $branchScope,
+    ) {}
 
     public function index(Request $request): View
     {
         $query = SalesInvoice::query()->with(['customer', 'branch']);
+        $this->branchScope->apply($query);
 
         if ($search = $request->get('search')) {
             $query->where('invoice_no', 'like', "%{$search}%");
@@ -32,11 +37,14 @@ class SalesInvoiceController extends Controller
 
     public function create(): View
     {
+        $defaultBranch = $this->branchScope->defaultBranchId();
+
         return view('sales.invoices.create', [
             'branches' => Branch::where('is_active', true)->get(),
             'customers' => Customer::where('is_active', true)->get(),
             'parts' => Part::where('is_active', true)->with('brand')->get(),
             'locations' => Location::with('branch')->get(),
+            'defaultBranchId' => $defaultBranch,
             'invoiceNo' => 'SI-'.now()->format('Ymd').'-'.str_pad((string) (SalesInvoice::count() + 1), 4, '0', STR_PAD_LEFT),
         ]);
     }
@@ -48,20 +56,29 @@ class SalesInvoiceController extends Controller
             'branch_id' => 'required|exists:branches,id',
             'customer_id' => 'required|exists:customers,id',
             'invoice_date' => 'required|date',
-            'invoice_type' => 'required|string',
+            'invoice_type' => 'required|string|in:cash,credit',
             'status' => 'required|string',
+            'paid_amount' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.part_id' => 'required|exists:parts,id',
             'items.*.location_id' => 'nullable|exists:locations,id',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.discount_percent' => 'nullable|numeric|min:0|max:100',
+            'items.*.vat_percent' => 'nullable|numeric|min:0|max:100',
+            'items.*.manual_price' => 'nullable|boolean',
         ]);
 
         $data['created_by'] = auth()->id();
+        $data['paid_amount'] = $data['paid_amount'] ?? 0;
         $postStock = $data['status'] === 'posted';
 
-        $this->salesService->createInvoice($data, $data['items'], $postStock);
+        try {
+            $this->salesService->createInvoice($data, $data['items'], $postStock);
+        } catch (\Throwable $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
 
         return redirect()->route('sales-invoices.index')->with('success', 'Sales invoice created.');
     }

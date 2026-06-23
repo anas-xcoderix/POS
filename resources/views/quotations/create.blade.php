@@ -5,7 +5,7 @@
 
     <div class="erp-card p-6">
         <h3 class="mb-4 flex items-center gap-2 text-base font-bold text-slate-900">
-            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-100 text-sm text-cyan-700">1</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 text-sm text-orange-700">1</span>
             Quotation Details
         </h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -30,7 +30,7 @@
     <div class="erp-card overflow-hidden">
         <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
             <h3 class="flex items-center gap-2 text-base font-bold text-slate-900">
-                <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-100 text-sm text-cyan-700">2</span>
+                <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 text-sm text-orange-700">2</span>
                 Line Items
             </h3>
             <button type="button" onclick="addRow()" class="erp-btn-ghost text-sm">
