@@ -6,9 +6,9 @@
     <div class="erp-card p-6">
         <h3 class="mb-4 font-bold">Invoice {{ $invoice->invoice_no }}</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <x-ui.form-field label="Date" name="invoice_date" type="date" :value="$invoice->invoice_date?->format('Y-m-d')" required />
+            <x-ui.form-field label="{{ __('ui.date') }}" name="invoice_date" type="date" :value="$invoice->invoice_date?->format('Y-m-d')" required />
             <x-ui.form-field label="Vendor Invoice No" name="vendor_invoice_no" :value="$invoice->vendor_invoice_no" />
-            <x-ui.form-field label="Remarks" name="remarks" :value="$invoice->remarks" />
+            <x-ui.form-field label="{{ __('ui.remarks') }}" name="remarks" :value="$invoice->remarks" />
         </div>
     </div>
 
@@ -36,7 +36,7 @@
     </div>
 
     <div class="flex justify-end gap-3">
-        <a href="{{ route('purchase-invoices.index') }}" class="erp-btn-secondary">Cancel</a>
+        <a href="{{ route('purchase-invoices.index') }}" class="erp-btn-secondary">{{ __('ui.cancel') }}</a>
         <button class="erp-btn-primary">Update Posted Invoice</button>
     </div>
 </form>

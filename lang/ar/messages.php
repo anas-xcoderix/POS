@@ -23,6 +23,8 @@ return [
     'pos' => [
         'session_opened' => 'تم فتح جلسة نقطة البيع.',
         'session_closed' => 'تم إغلاق جلسة نقطة البيع.',
+        'session_already_open' => 'هذا الجهاز لديه جلسة مفتوحة بالفعل.',
+        'session_not_open' => 'هذه الجلسة غير مفتوحة.',
         'sale_completed' => 'تم إتمام البيع: :no.',
     ],
     'pick' => [
@@ -134,5 +136,27 @@ return [
         'order_deleted' => 'تم حذف الطلب.',
         'expense_recorded' => 'تم تسجيل المصروف.',
         'expense_removed' => 'تمت إزالة المصروف.',
+    ],
+    'transport' => [
+        'shipment_created' => 'تم إنشاء شحنة النقل.',
+        'status_updated' => 'تم تحديث حالة الشحنة.',
+        'voucher_created' => 'تم إنشاء سند نقدية النقل.',
+        'voucher_posted' => 'تم ترحيل سند النقل إلى دفتر النقدية.',
+    ],
+    'hr' => [
+        'payroll_generated' => 'تم إنشاء مسير الرواتب.',
+        'payroll_posted' => 'تم ترحيل الرواتب إلى دفتر الأستاذ.',
+        'payroll_already_posted' => 'تم ترحيل رواتب هذه الفترة مسبقاً.',
+        'payroll_not_draft' => 'يمكن تعديل أو إعادة إنشاء مسير الرواتب في حالة المسودة فقط.',
+        'payroll_not_posted' => 'يجب ترحيل الرواتب قبل الدفع.',
+        'payroll_already_paid' => 'تم دفع هذا المسير مسبقاً.',
+        'payroll_paid' => 'تم تسجيل دفع الرواتب.',
+        'payroll_line_updated' => 'تم تحديث بند الراتب.',
+        'payroll_regenerated' => 'تم إعادة إنشاء مسير الرواتب.',
+        'leave_created' => 'تم تقديم طلب الإجازة.',
+        'leave_approved' => 'تمت الموافقة على طلب الإجازة.',
+        'leave_rejected' => 'تم رفض طلب الإجازة.',
+        'leave_not_pending' => 'طلب الإجازة ليس قيد الانتظار.',
+        'attendance_saved' => 'تم حفظ الحضور.',
     ],
 ];

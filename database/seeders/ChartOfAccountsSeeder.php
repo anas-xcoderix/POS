@@ -20,6 +20,8 @@ class ChartOfAccountsSeeder extends Seeder
             ['4000', 'Sales Revenue', 'revenue'],
             ['5000', 'Cost of Goods Sold', 'expense'],
             ['5100', 'Operating Expenses', 'expense'],
+            ['5110', 'Salaries Expense', 'expense'],
+            ['2300', 'Salaries Payable', 'liability'],
         ];
 
         foreach ($accounts as [$code, $name, $type]) {

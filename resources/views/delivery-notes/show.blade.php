@@ -1,4 +1,4 @@
-@php $title = __('modules.delivery_note').' '.$note->dn_no; @endphp
+@php $title = 'DN '.$note->dn_no; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">
@@ -54,6 +54,13 @@
         </div>
     </div>
 
-    <a href="{{ route('delivery-notes.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_delivery_notes') }}</a>
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ route('documents.delivery-note.pdf', $note) }}" class="erp-btn-secondary">{{ __('ui.pdf') }}</a>
+        <form method="POST" action="{{ route('transport.shipments.from-delivery-note', $note) }}">
+            @csrf
+            <button class="erp-btn-primary">{{ __('transport.new_shipment') }}</button>
+        </form>
+        <a href="{{ route('delivery-notes.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_delivery_notes') }}</a>
+    </div>
 </div>
 </x-erp-layout>

@@ -35,4 +35,9 @@ class PosSession extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function invoices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SalesInvoice::class);
+    }
 }

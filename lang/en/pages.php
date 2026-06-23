@@ -120,6 +120,7 @@ return [
         'back_to_quotations' => 'Back to Quotations',
         'back_to_job_cards' => 'Back to Job Cards',
         'back_to_delivery_notes' => 'Back to Delivery Notes',
+        'back_to_purchase_orders' => 'Back to Purchase Orders',
         'back_to_counts' => 'Back to Counts',
         'back_to_parts' => 'Back to Parts',
         'back_to_vehicles' => 'Back to Vehicles',

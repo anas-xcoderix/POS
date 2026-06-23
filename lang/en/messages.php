@@ -23,6 +23,8 @@ return [
     'pos' => [
         'session_opened' => 'POS session opened.',
         'session_closed' => 'POS session closed.',
+        'session_already_open' => 'This terminal already has an open session.',
+        'session_not_open' => 'This session is not open.',
         'sale_completed' => 'Sale completed: :no.',
     ],
     'pick' => [
@@ -134,5 +136,27 @@ return [
         'order_deleted' => 'Order deleted.',
         'expense_recorded' => 'Expense recorded.',
         'expense_removed' => 'Expense removed.',
+    ],
+    'transport' => [
+        'shipment_created' => 'Transport shipment created.',
+        'status_updated' => 'Shipment status updated.',
+        'voucher_created' => 'Transport cash voucher created.',
+        'voucher_posted' => 'Transport voucher posted to cash book.',
+    ],
+    'hr' => [
+        'payroll_generated' => 'Payroll generated.',
+        'payroll_posted' => 'Payroll posted to general ledger.',
+        'payroll_already_posted' => 'Payroll for this period is already posted.',
+        'payroll_not_draft' => 'Only draft payroll can be edited or regenerated.',
+        'payroll_not_posted' => 'Payroll must be posted before payment.',
+        'payroll_already_paid' => 'This payroll has already been paid.',
+        'payroll_paid' => 'Payroll marked as paid.',
+        'payroll_line_updated' => 'Payroll line updated.',
+        'payroll_regenerated' => 'Payroll regenerated.',
+        'leave_created' => 'Leave request submitted.',
+        'leave_approved' => 'Leave request approved.',
+        'leave_rejected' => 'Leave request rejected.',
+        'leave_not_pending' => 'Leave request is not pending approval.',
+        'attendance_saved' => 'Attendance saved.',
     ],
 ];

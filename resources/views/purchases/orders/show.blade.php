@@ -90,6 +90,9 @@ $invoiceNo = 'PI-'.now()->format('Ymd').'-'.str_pad((string) (\App\Models\Purcha
         <x-ui.alert type="success">This purchase order is fully received.</x-ui.alert>
     @endif
 
-    <a href="{{ route('purchase-orders.index') }}" class="erp-btn-secondary">Back to Purchase Orders</a>
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ route('documents.purchase-order.pdf', $purchaseOrder) }}" class="erp-btn-secondary">{{ __('ui.pdf') }}</a>
+        <a href="{{ route('purchase-orders.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_purchase_orders') }}</a>
+    </div>
 </div>
 </x-erp-layout>

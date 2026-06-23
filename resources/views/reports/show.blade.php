@@ -5,9 +5,18 @@
     $filters = $def['filters'] ?? [];
     $query = request()->query();
 @endphp
+@push('styles')
+<style>
+@media print {
+    aside, form, .no-print { display: none !important; }
+    main { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    .report-preview { box-shadow: none !important; }
+}
+</style>
+@endpush
 <x-erp-layout>
 <div class="space-y-4" @if($isAr) dir="rtl" @endif>
-    <div class="erp-card p-4">
+    <div class="erp-card p-4 no-print">
         <form method="GET" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
             <input type="hidden" name="locale" value="{{ $locale }}">
             @if(in_array('from', $filters))
@@ -24,6 +33,14 @@
                     <option value="">{{ $isAr ? 'الكل' : 'All' }}</option>
                     @foreach($filterOptions['branches'] as $b)
                         <option value="{{ $b->id }}" @selected(($data['meta']['filters']['branch_id'] ?? '') == $b->id)>{{ $b->name }}</option>
+                    @endforeach
+                </x-ui.form-field>
+            @endif
+            @if(in_array('driver_id', $filters))
+                <x-ui.form-field :label="$isAr ? 'السائق' : 'Driver'" name="driver_id" type="select">
+                    <option value="">{{ $isAr ? 'الكل' : 'All' }}</option>
+                    @foreach($filterOptions['drivers'] ?? [] as $d)
+                        <option value="{{ $d->id }}" @selected(($data['meta']['filters']['driver_id'] ?? '') == $d->id)>{{ $d->name }}</option>
                     @endforeach
                 </x-ui.form-field>
             @endif
@@ -47,9 +64,14 @@
                 </x-ui.form-field>
             @endif
             @if(in_array('status', $filters))
+                @php
+                    $statusList = ($data['meta']['category'] ?? '') === 'transport'
+                        ? ($filterOptions['shipment_statuses'] ?? [])
+                        : ($filterOptions['job_statuses'] ?? []);
+                @endphp
                 <x-ui.form-field :label="$isAr ? 'الحالة' : 'Status'" name="status" type="select">
                     <option value="">{{ $isAr ? 'الكل' : 'All' }}</option>
-                    @foreach($filterOptions['job_statuses'] as $s)
+                    @foreach($statusList as $s)
                         <option value="{{ $s }}" @selected(($data['meta']['filters']['status'] ?? '') == $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                     @endforeach
                 </x-ui.form-field>
@@ -66,13 +88,17 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <h2 class="text-lg font-bold text-slate-900">{{ $data['meta']['title'] }}</h2>
-            <p class="text-xs text-slate-500">{{ $def['legacy'] ?? '' }} · {{ $data['meta']['generated_at'] }}</p>
+            <p class="text-xs text-slate-500">
+                @if($def['legacy'] ?? null)<span class="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{{ $def['legacy'] }}.rpt</span> · @endif
+                {{ $data['meta']['generated_at'] }}
+                @if($data['meta']['row_count'] ?? null) · {{ __('reports.records') }}: {{ number_format($data['meta']['row_count']) }}@endif
+            </p>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2 no-print">
             <a href="{{ route('reports.index', ['locale' => $locale]) }}" class="erp-btn-secondary text-sm">{{ $isAr ? 'كل التقارير' : 'All Reports' }}</a>
             <a href="{{ route('reports.show', array_merge(['report' => $report], $query, ['locale' => 'en'])) }}" class="erp-btn-ghost text-sm">EN</a>
             <a href="{{ route('reports.show', array_merge(['report' => $report], $query, ['locale' => 'ar'])) }}" class="erp-btn-ghost text-sm">عربي</a>
-            <a href="{{ route('reports.pdf', array_merge(['report' => $report], $query)) }}" class="erp-btn-secondary text-sm" target="_blank">{{ __('ui.pdf') }}</a>
+            <a href="{{ route('reports.pdf', array_merge(['report' => $report], $query)) }}" class="erp-btn-secondary text-sm" target="_blank">PDF</a>
             <a href="{{ route('reports.pdf', array_merge(['report' => $report], $query, ['locale' => 'ar'])) }}" class="erp-btn-secondary text-sm" target="_blank">PDF عربي</a>
             <a href="{{ route('reports.csv', array_merge(['report' => $report], $query)) }}" class="erp-btn-primary text-sm">Excel/CSV</a>
         </div>

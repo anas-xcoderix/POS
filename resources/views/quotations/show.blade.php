@@ -1,4 +1,4 @@
-@php $title = __('modules.quotation').' '.$quotation->quotation_no; @endphp
+@php $title = 'Quotation '.$quotation->quotation_no; @endphp
 <x-erp-layout>
 <div class="space-y-6">
     <div class="erp-card p-6">
@@ -80,7 +80,8 @@
         </div>
     @endif
 
-    <div>
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ route('documents.quotation.pdf', $quotation) }}" class="erp-btn-secondary">{{ __('ui.pdf') }}</a>
         <a href="{{ route('quotations.index') }}" class="erp-btn-secondary">{{ __('pages.actions.back_to_quotations') }}</a>
     </div>
 </div>

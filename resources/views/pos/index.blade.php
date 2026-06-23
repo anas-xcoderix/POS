@@ -8,8 +8,9 @@
             @if($open = $openSessions->get($terminal->id))
                 <p class="mt-3 text-sm">{{ __('pages.pos.session') }}: <span class="font-medium">{{ $open->session_no }}</span></p>
                 <p class="text-sm text-slate-500">{{ __('pages.pos.sales') }}: {{ number_format($open->total_sales, 2) }}</p>
-                <div class="mt-4 flex gap-2">
+                <div class="mt-4 flex flex-wrap gap-2">
                     <a href="{{ route('pos.counter', $open) }}" class="erp-btn-primary text-sm">{{ __('pages.actions.open_counter') }}</a>
+                    <a href="{{ route('pos.session-report', $open) }}" target="_blank" class="erp-btn-secondary text-sm">{{ __('pos.session_report') }}</a>
                 </div>
             @else
                 <form method="POST" action="{{ route('pos.open-session', $terminal) }}" class="mt-4 space-y-3">

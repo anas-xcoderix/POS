@@ -30,7 +30,9 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\HrReportController;
+use App\Http\Controllers\PublicHolidayController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\JobCardController;
 use App\Http\Controllers\ReportController;
@@ -54,6 +56,10 @@ use App\Http\Controllers\CashBookController;
 use App\Http\Controllers\FixedAssetController;
 use App\Http\Controllers\FixedAssetCategoryController;
 use App\Http\Controllers\StockBatchController;
+use App\Http\Controllers\TransportCashVoucherController;
+use App\Http\Controllers\TransportDriverController;
+use App\Http\Controllers\TransportShipmentController;
+use App\Http\Controllers\TransportShippingStatusController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ShowroomVehicleController;
 use Illuminate\Support\Facades\Route;
@@ -127,6 +133,11 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
 
     Route::get('documents/sales-invoices/{sales_invoice}/pdf', [DocumentController::class, 'salesInvoicePdf'])->name('documents.sales-invoice.pdf');
     Route::get('documents/purchase-invoices/{purchase_invoice}/pdf', [DocumentController::class, 'purchaseInvoicePdf'])->name('documents.purchase-invoice.pdf');
+    Route::get('documents/delivery-notes/{delivery_note}/pdf', [DocumentController::class, 'deliveryNotePdf'])->name('documents.delivery-note.pdf');
+    Route::get('documents/quotations/{quotation}/pdf', [DocumentController::class, 'quotationPdf'])->name('documents.quotation.pdf');
+    Route::get('documents/purchase-orders/{purchase_order}/pdf', [DocumentController::class, 'purchaseOrderPdf'])->name('documents.purchase-order.pdf');
+    Route::get('documents/payment-receipts/{payment_receipt}/pdf', [DocumentController::class, 'paymentReceiptPdf'])->name('documents.payment-receipt.pdf');
+    Route::get('documents/payroll/{payroll_run}/items/{payroll_item}/pdf', [DocumentController::class, 'payslipPdf'])->name('documents.payslip.pdf');
     Route::get('documents/parts/{part}/label', [DocumentController::class, 'partBarcode'])->name('documents.part.label');
     Route::get('documents/parts/{part}/barcode.png', [DocumentController::class, 'partBarcodeImage'])->name('documents.part.barcode');
     Route::get('documents/masters/customers/pdf', [MasterPrintController::class, 'customers'])->name('documents.masters.customers.pdf');
@@ -160,6 +171,7 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
 
     Route::resource('departments', DepartmentController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('employees', EmployeeController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('payroll', [PayrollController::class, 'index'])->name('payroll.index');
@@ -167,6 +179,15 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::post('payroll', [PayrollController::class, 'store'])->name('payroll.store');
     Route::get('payroll/{payroll}', [PayrollController::class, 'show'])->name('payroll.show');
     Route::post('payroll/{payroll}/post', [PayrollController::class, 'post'])->name('payroll.post');
+    Route::post('payroll/{payroll}/pay', [PayrollController::class, 'pay'])->name('payroll.pay');
+    Route::patch('payroll/{payroll}/items/{item}', [PayrollController::class, 'updateItem'])->name('payroll.update-item');
+    Route::post('payroll/{payroll}/regenerate', [PayrollController::class, 'regenerate'])->name('payroll.regenerate');
+    Route::resource('public-holidays', PublicHolidayController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('leave', [LeaveRequestController::class, 'index'])->name('leave.index');
+    Route::get('leave/create', [LeaveRequestController::class, 'create'])->name('leave.create');
+    Route::post('leave', [LeaveRequestController::class, 'store'])->name('leave.store');
+    Route::post('leave/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leave.approve');
+    Route::post('leave/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leave.reject');
     Route::get('hr/reports/expiring-documents', [HrReportController::class, 'expiringDocuments'])->name('hr.reports.expiring-documents');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
@@ -199,6 +220,8 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::get('pos', [PosController::class, 'index'])->name('pos.index');
     Route::post('pos/terminals/{terminal}/open-session', [PosController::class, 'openSession'])->name('pos.open-session');
     Route::get('pos/sessions/{session}', [PosController::class, 'counter'])->name('pos.counter');
+    Route::get('pos/sessions/{session}/search-parts', [PosController::class, 'searchParts'])->name('pos.search-parts');
+    Route::get('pos/sessions/{session}/report', [PosController::class, 'sessionReport'])->name('pos.session-report');
     Route::post('pos/sessions/{session}/sale', [PosController::class, 'quickSale'])->name('pos.quick-sale');
     Route::post('pos/sessions/{session}/close', [PosController::class, 'closeSession'])->name('pos.close-session');
 
@@ -226,6 +249,25 @@ Route::middleware(['auth', 'verified', 'erp.permission'])->group(function () {
     Route::post('showroom-vehicles/{showroom_vehicle}/transfer', [ShowroomVehicleController::class, 'transfer'])->name('showroom-vehicles.transfer');
     Route::post('showroom-vehicles/{showroom_vehicle}/sell', [ShowroomVehicleController::class, 'sell'])->name('showroom-vehicles.sell');
     Route::post('showroom-transfers/{showroomVehicleTransfer}/receive', [ShowroomVehicleController::class, 'receiveTransfer'])->name('showroom-transfers.receive');
+
+    Route::resource('transport-drivers', TransportDriverController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::prefix('transport')->name('transport.')->group(function () {
+        Route::get('shipments', [TransportShipmentController::class, 'index'])->name('shipments.index');
+        Route::get('shipments/create', [TransportShipmentController::class, 'create'])->name('shipments.create');
+        Route::post('shipments', [TransportShipmentController::class, 'store'])->name('shipments.store');
+        Route::get('shipments/{shipment}', [TransportShipmentController::class, 'show'])->name('shipments.show');
+        Route::patch('shipments/{shipment}/status', [TransportShipmentController::class, 'updateStatus'])->name('shipments.update-status');
+        Route::post('shipments/from-delivery-note/{deliveryNote}', [TransportShipmentController::class, 'createFromDeliveryNote'])->name('shipments.from-delivery-note');
+
+        Route::get('cash-vouchers', [TransportCashVoucherController::class, 'index'])->name('cash-vouchers.index');
+        Route::get('cash-vouchers/create', [TransportCashVoucherController::class, 'create'])->name('cash-vouchers.create');
+        Route::post('cash-vouchers', [TransportCashVoucherController::class, 'store'])->name('cash-vouchers.store');
+        Route::get('cash-vouchers/{cashVoucher}', [TransportCashVoucherController::class, 'show'])->name('cash-vouchers.show');
+        Route::post('cash-vouchers/{cashVoucher}/post', [TransportCashVoucherController::class, 'post'])->name('cash-vouchers.post');
+
+        Route::get('shipping-status', [TransportShippingStatusController::class, 'index'])->name('shipping-status.index');
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

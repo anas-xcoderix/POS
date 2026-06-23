@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Account;
+use App\Models\AttendanceRecord;
 use App\Models\AuditLog;
 use App\Models\Branch;
 use App\Models\CashBookEntry;
@@ -33,6 +35,9 @@ use App\Models\SalesInvoice;
 use App\Models\SalesInvoiceItem;
 use App\Models\StockBalance;
 use App\Models\StockMovement;
+use App\Models\TransportCashVoucher;
+use App\Models\TransportDriver;
+use App\Models\TransportShipment;
 use App\Models\Vendor;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -97,15 +102,83 @@ class ReportService
             'title_ar' => $originalDef['title_ar'] ?? $originalDef['title'],
             'legacy' => $originalDef['legacy'] ?? null,
             'category' => $originalDef['category'],
-            'view' => $originalDef['view'] ?? 'table',
+            'view' => $payload['meta']['view'] ?? ($originalDef['view'] ?? 'table'),
             'locale' => $locale,
             'company' => $this->settings->get('company_name', config('app.name')),
             'generated_at' => now()->format('Y-m-d H:i'),
             'filters' => $filters,
+            'filter_display' => $this->filterDisplay($filters, $originalDef, $locale),
+            'row_count' => $this->rowCount($payload),
+            'printed_by' => auth()->user()?->name,
             'alias_of' => ($reportKey !== $key) ? $reportKey : null,
         ], $payload['meta'] ?? []);
 
         return $payload;
+    }
+
+    protected function rowCount(array $payload): int
+    {
+        return count($payload['rows'] ?? [])
+            + count($payload['employees'] ?? [])
+            + count($payload['vehicles'] ?? []);
+    }
+
+    protected function filterDisplay(array $filters, array $def, string $locale): array
+    {
+        $isAr = $locale === 'ar';
+        $allowed = $def['filters'] ?? [];
+        $display = [];
+
+        $labels = [
+            'from' => $isAr ? __('reports.from') : __('reports.from'),
+            'to' => $isAr ? __('reports.to') : __('reports.to'),
+            'as_of' => __('reports.as_of'),
+            'search' => __('reports.search'),
+            'status' => __('reports.status'),
+            'days' => __('reports.within_days'),
+            'movement_type' => __('reports.movement_type'),
+        ];
+
+        foreach (['from', 'to', 'as_of', 'search', 'status', 'movement_type'] as $key) {
+            if (! in_array($key, $allowed, true) || empty($filters[$key])) {
+                continue;
+            }
+            $display[] = ['label' => $labels[$key], 'value' => $filters[$key]];
+        }
+
+        if (in_array('days', $allowed, true) && isset($filters['days'])) {
+            $display[] = ['label' => $labels['days'], 'value' => (string) $filters['days']];
+        }
+
+        if (in_array('branch_id', $allowed, true)) {
+            if ($filters['branch_id'] ?? null) {
+                $branch = Branch::find($filters['branch_id']);
+                $display[] = [
+                    'label' => __('reports.branch'),
+                    'value' => $branch ? ($isAr && $branch->name_ar ? $branch->name_ar : $branch->name) : (string) $filters['branch_id'],
+                ];
+            } else {
+                $display[] = ['label' => __('reports.branch'), 'value' => __('reports.all_branches')];
+            }
+        }
+
+        if (in_array('part_id', $allowed, true) && ($filters['part_id'] ?? null)) {
+            $part = Part::find($filters['part_id']);
+            $display[] = [
+                'label' => __('reports.part'),
+                'value' => $part?->part_number ?? (string) $filters['part_id'],
+            ];
+        }
+
+        if (in_array('driver_id', $allowed, true) && ($filters['driver_id'] ?? null)) {
+            $driver = TransportDriver::find($filters['driver_id']);
+            $display[] = [
+                'label' => __('reports.driver'),
+                'value' => $driver?->name ?? (string) $filters['driver_id'],
+            ];
+        }
+
+        return $display;
     }
 
     protected function normalizeFilters(array $filters, array $def): array
@@ -124,6 +197,7 @@ class ReportService
             'search' => $filters['search'] ?? null,
             'movement_type' => $filters['movement_type'] ?? null,
             'status' => $filters['status'] ?? null,
+            'driver_id' => $filters['driver_id'] ?? null,
             'days' => (int) ($filters['days'] ?? 90),
         ];
 
@@ -2143,6 +2217,236 @@ class ReportService
         ], $rows);
     }
 
+    protected function reportTransportShipmentsReport(array $f): array
+    {
+        $rows = TransportShipment::with(['customer', 'branch', 'driver'])
+            ->whereBetween('ship_date', [$f['from'], $f['to']])
+            ->when($f['branch_id'] ?? null, fn ($q, $b) => $q->where('branch_id', $b))
+            ->when($f['driver_id'] ?? null, fn ($q, $d) => $q->where('transport_driver_id', $d))
+            ->orderBy('ship_date')
+            ->get()
+            ->map(fn ($s) => [
+                'shipment' => $s->shipment_no,
+                'date' => $s->ship_date?->format('Y-m-d'),
+                'customer' => $s->customer?->name,
+                'driver' => $s->driver?->name ?? '—',
+                'status' => $s->status,
+                'charge' => $this->money($s->transport_charge),
+                'cod' => $this->money($s->cod_amount),
+            ]);
+
+        return $this->table([
+            $this->col('shipment', 'Shipment', 'الشحنة'),
+            $this->col('date', 'Date', 'التاريخ'),
+            $this->col('customer', 'Customer', 'العميل'),
+            $this->col('driver', 'Driver', 'السائق'),
+            $this->col('status', 'Status', 'الحالة'),
+            $this->col('charge', 'Charge', 'الرسوم', 'right'),
+            $this->col('cod', 'COD', 'COD', 'right'),
+        ], $rows);
+    }
+
+    protected function reportTransportDriverReport(array $f): array
+    {
+        $rows = TransportShipment::with(['customer', 'driver'])
+            ->whereBetween('ship_date', [$f['from'], $f['to']])
+            ->when($f['driver_id'] ?? null, fn ($q, $d) => $q->where('transport_driver_id', $d))
+            ->orderBy('transport_driver_id')
+            ->orderBy('ship_date')
+            ->get()
+            ->groupBy('transport_driver_id')
+            ->flatMap(function ($group) {
+                $driver = $group->first()->driver;
+
+                return $group->map(fn ($s) => [
+                    'driver' => $driver?->name ?? '—',
+                    'shipment' => $s->shipment_no,
+                    'customer' => $s->customer?->name,
+                    'date' => $s->ship_date?->format('Y-m-d'),
+                    'status' => $s->status,
+                    'cod' => $this->money($s->cod_amount),
+                    'collected' => $this->money($s->cod_collected),
+                ]);
+            });
+
+        return $this->table([
+            $this->col('driver', 'Driver', 'السائق'),
+            $this->col('shipment', 'Shipment', 'الشحنة'),
+            $this->col('customer', 'Customer', 'العميل'),
+            $this->col('date', 'Date', 'التاريخ'),
+            $this->col('status', 'Status', 'الحالة'),
+            $this->col('cod', 'COD', 'COD', 'right'),
+            $this->col('collected', 'Collected', 'المحصّل', 'right'),
+        ], $rows);
+    }
+
+    protected function reportTransportCashReport(array $f): array
+    {
+        $rows = TransportCashVoucher::with(['driver', 'branch'])
+            ->where('status', 'posted')
+            ->whereBetween('voucher_date', [$f['from'], $f['to']])
+            ->when($f['branch_id'] ?? null, fn ($q, $b) => $q->where('branch_id', $b))
+            ->orderBy('voucher_date')
+            ->get()
+            ->map(fn ($v) => [
+                'voucher' => $v->voucher_no,
+                'date' => $v->voucher_date?->format('Y-m-d'),
+                'driver' => $v->driver?->name,
+                'branch' => $v->branch?->code,
+                'amount' => $this->money($v->total_amount),
+            ]);
+
+        return $this->table([
+            $this->col('voucher', 'Voucher', 'السند'),
+            $this->col('date', 'Date', 'التاريخ'),
+            $this->col('driver', 'Driver', 'السائق'),
+            $this->col('branch', 'Branch', 'الفرع'),
+            $this->col('amount', 'Amount', 'المبلغ', 'right'),
+        ], $rows);
+    }
+
+    protected function reportShippingStatusReport(array $f): array
+    {
+        $rows = TransportShipment::with(['customer', 'driver', 'branch'])
+            ->whereBetween('ship_date', [$f['from'], $f['to']])
+            ->when($f['branch_id'] ?? null, fn ($q, $b) => $q->where('branch_id', $b))
+            ->when($f['status'] ?? null, fn ($q, $s) => $q->where('status', $s))
+            ->orderByRaw("FIELD(status, 'pending','dispatched','in_transit','delivered','failed','cancelled')")
+            ->get()
+            ->map(fn ($s) => [
+                'shipment' => $s->shipment_no,
+                'date' => $s->ship_date?->format('Y-m-d'),
+                'customer' => $s->customer?->name,
+                'driver' => $s->driver?->name ?? '—',
+                'status' => $s->status,
+                'expected' => $s->expected_date?->format('Y-m-d') ?? '—',
+                'delivered' => $s->delivered_at?->format('Y-m-d') ?? '—',
+            ]);
+
+        return $this->table([
+            $this->col('shipment', 'Shipment', 'الشحنة'),
+            $this->col('date', 'Ship Date', 'تاريخ الشحن'),
+            $this->col('customer', 'Customer', 'العميل'),
+            $this->col('driver', 'Driver', 'السائق'),
+            $this->col('status', 'Status', 'الحالة'),
+            $this->col('expected', 'Expected', 'المتوقع'),
+            $this->col('delivered', 'Delivered', 'التسليم'),
+        ], $rows);
+    }
+
+    protected function reportAttendanceTime(array $f): array
+    {
+        $rows = AttendanceRecord::with(['employee.department', 'employee.branch'])
+            ->whereBetween('attendance_date', [$f['from'], $f['to']])
+            ->when($f['branch_id'] ?? null, fn ($q, $b) => $q->whereHas('employee', fn ($e) => $e->where('branch_id', $b)))
+            ->orderBy('attendance_date')
+            ->orderBy('employee_id')
+            ->get()
+            ->map(fn ($r) => [
+                'date' => $r->attendance_date->format('Y-m-d'),
+                'employee' => localized($r->employee),
+                'department' => localized($r->employee?->department),
+                'status' => $r->status,
+                'check_in' => $r->check_in,
+                'check_out' => $r->check_out,
+            ]);
+
+        return $this->table([
+            $this->col('date', 'Date', 'التاريخ'),
+            $this->col('employee', 'Employee', 'الموظف'),
+            $this->col('department', 'Department', 'القسم'),
+            $this->col('status', 'Status', 'الحالة'),
+            $this->col('check_in', 'Check In', 'الدخول'),
+            $this->col('check_out', 'Check Out', 'الخروج'),
+        ], $rows);
+    }
+
+    protected function reportNoLocationParts(array $f): array
+    {
+        $rows = Part::where('is_active', true)
+            ->when($f['search'] ?? null, fn ($q, $s) => $q->where('part_number', 'like', "%{$s}%"))
+            ->where(function ($q) {
+                $q->whereNull('aisle')->orWhere('aisle', '')
+                    ->where(function ($q2) {
+                        $q2->whereNull('rack')->orWhere('rack', '');
+                    })
+                    ->where(function ($q2) {
+                        $q2->whereNull('bin')->orWhere('bin', '');
+                    });
+            })
+            ->orderBy('part_number')
+            ->get()
+            ->map(fn ($p) => [
+                'part' => $p->part_number,
+                'description' => localized($p, 'description_en', 'description_ar'),
+                'aisle' => $p->aisle ?: '—',
+                'rack' => $p->rack ?: '—',
+                'bin' => $p->bin ?: '—',
+            ]);
+
+        return $this->table([
+            $this->col('part', 'Part No', 'رقم القطعة'),
+            $this->col('description', 'Description', 'الوصف'),
+            $this->col('aisle', 'Aisle', 'الممر'),
+            $this->col('rack', 'Rack', 'الرف'),
+            $this->col('bin', 'Bin', 'الصندوق'),
+        ], $rows);
+    }
+
+    protected function reportDeliverySummary(array $f): array
+    {
+        $rows = \App\Models\DeliveryNote::with(['customer', 'branch'])
+            ->whereBetween('delivery_date', [$f['from'], $f['to']])
+            ->when($f['branch_id'] ?? null, fn ($q, $b) => $q->where('branch_id', $b))
+            ->withCount('items')
+            ->orderByDesc('delivery_date')
+            ->get()
+            ->map(fn ($n) => [
+                'dn_no' => $n->dn_no,
+                'date' => $n->delivery_date?->format('Y-m-d'),
+                'customer' => localized($n->customer),
+                'branch' => localized($n->branch),
+                'items' => $n->items_count,
+                'status' => $n->status,
+                'driver' => $n->driver_name ?? '—',
+            ]);
+
+        return $this->table([
+            $this->col('dn_no', 'DN No', 'رقم التسليم'),
+            $this->col('date', 'Date', 'التاريخ'),
+            $this->col('customer', 'Customer', 'العميل'),
+            $this->col('branch', 'Branch', 'الفرع'),
+            $this->col('items', 'Lines', 'البنود', 'right'),
+            $this->col('status', 'Status', 'الحالة'),
+            $this->col('driver', 'Driver', 'السائق'),
+        ], $rows);
+    }
+
+    protected function reportLabelsReport(array $f): array
+    {
+        $rows = Part::where('is_active', true)
+            ->when($f['search'] ?? null, fn ($q, $s) => $q->where(function ($q2) use ($s) {
+                $q2->where('part_number', 'like', "%{$s}%")
+                    ->orWhere('barcode', 'like', "%{$s}%");
+            }))
+            ->orderBy('part_number')
+            ->limit(500)
+            ->get()
+            ->map(fn ($p) => [
+                'part' => $p->part_number,
+                'barcode' => $p->barcode ?: $p->part_number,
+                'description' => localized($p, 'description_en', 'description_ar'),
+                'label_url' => route('documents.part.label', $p),
+            ]);
+
+        return $this->table([
+            $this->col('part', 'Part No', 'رقم القطعة'),
+            $this->col('barcode', 'Barcode', 'الباركود'),
+            $this->col('description', 'Description', 'الوصف'),
+            $this->col('label_url', 'Print', 'طباعة'),
+        ], $rows);
+    }
+
     public function filterOptions(): array
     {
         return [
@@ -2150,6 +2454,8 @@ class ReportService
             'parts' => Part::where('is_active', true)->orderBy('part_number')->get(['id', 'part_number', 'description_en']),
             'movement_types' => StockMovement::distinct()->pluck('movement_type')->filter()->values(),
             'job_statuses' => ['open', 'in_progress', 'completed', 'invoiced', 'cancelled'],
+            'drivers' => TransportDriver::where('is_active', true)->orderBy('name')->get(['id', 'code', 'name']),
+            'shipment_statuses' => TransportShipment::STATUSES,
         ];
     }
 }

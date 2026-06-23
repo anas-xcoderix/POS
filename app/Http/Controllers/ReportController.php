@@ -57,9 +57,19 @@ class ReportController extends Controller
         abort_unless($this->canAccessReport($def), 403);
 
         $data = $this->reports->generate($report, array_merge($request->all(), ['locale' => $request->get('locale', 'en')]));
-        $view = $data['meta']['locale'] === 'ar' ? 'reports.pdf.document-ar' : 'reports.pdf.document';
+        $locale = $data['meta']['locale'] ?? 'en';
+        app()->setLocale($locale);
+
+        $view = $locale === 'ar' ? 'reports.pdf.document-ar' : 'reports.pdf.document';
+
+        $columnCount = count($data['columns'] ?? []);
+        $orientation = $columnCount > 6 ? 'landscape' : 'portrait';
 
         $pdf = Pdf::loadView($view, compact('data', 'report', 'def'));
+        $pdf->setPaper('a4', $orientation);
+        $pdf->setOption('isPhpEnabled', true);
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('defaultFont', 'DejaVu Sans');
 
         return $pdf->download($report.'-'.now()->format('Ymd').'.pdf');
     }

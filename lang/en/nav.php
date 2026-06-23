@@ -50,7 +50,9 @@ return [
     'employees' => 'Employees',
     'departments' => 'Departments',
     'attendance' => 'Attendance',
+    'leave' => 'Leave Requests',
     'payroll' => 'Payroll',
+    'public_holidays' => 'Public Holidays',
     'expiring_docs' => 'Expiring Docs',
     'branches' => 'Branches',
     'locations' => 'Locations',
@@ -62,4 +64,8 @@ return [
     'users_roles' => 'Users & Roles',
     'audit_logs' => 'Audit Logs',
     'sign_out' => 'Sign Out',
+    'transport_shipments' => 'Shipments',
+    'transport_drivers' => 'Transport Drivers',
+    'transport_cash' => 'Transport Cash',
+    'shipping_status' => 'Shipping Status',
 ];

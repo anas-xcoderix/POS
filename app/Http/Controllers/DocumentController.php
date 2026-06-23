@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Branch;
-use App\Models\Location;
+use App\Models\DeliveryNote;
 use App\Models\Part;
+use App\Models\PaymentReceipt;
+use App\Models\PayrollItem;
+use App\Models\PayrollRun;
 use App\Models\PurchaseInvoice;
 use App\Models\PurchaseOrder;
+use App\Models\Quotation;
 use App\Models\SalesInvoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
@@ -18,9 +21,13 @@ class DocumentController extends Controller
     {
         $salesInvoice->load(['items.part.brand', 'customer', 'branch']);
 
-        $pdf = Pdf::loadView(pdf_view('sales-invoice'), compact('salesInvoice'));
+        $view = $salesInvoice->source === 'pos' ? pdf_view('pos-receipt') : pdf_view('sales-invoice');
 
-        return $pdf->download('sales-invoice-'.$salesInvoice->invoice_no.'.pdf');
+        $pdf = Pdf::loadView($view, compact('salesInvoice'));
+
+        $prefix = $salesInvoice->source === 'pos' ? 'pos-receipt' : 'sales-invoice';
+
+        return $pdf->download($prefix.'-'.$salesInvoice->invoice_no.'.pdf');
     }
 
     public function purchaseInvoicePdf(PurchaseInvoice $purchaseInvoice): Response
@@ -30,6 +37,59 @@ class DocumentController extends Controller
         $pdf = Pdf::loadView(pdf_view('purchase-invoice'), compact('purchaseInvoice'));
 
         return $pdf->download('purchase-invoice-'.$purchaseInvoice->invoice_no.'.pdf');
+    }
+
+    public function deliveryNotePdf(DeliveryNote $deliveryNote): Response
+    {
+        $deliveryNote->load(['items.part', 'customer', 'branch', 'salesInvoice']);
+
+        $pdf = Pdf::loadView(pdf_view('delivery-note'), ['note' => $deliveryNote]);
+
+        return $pdf->download('delivery-note-'.$deliveryNote->dn_no.'.pdf');
+    }
+
+    public function quotationPdf(Quotation $quotation): Response
+    {
+        $quotation->load(['items.part', 'customer', 'branch']);
+
+        $pdf = Pdf::loadView(pdf_view('quotation'), compact('quotation'));
+
+        return $pdf->download('quotation-'.$quotation->quotation_no.'.pdf');
+    }
+
+    public function purchaseOrderPdf(PurchaseOrder $purchaseOrder): Response
+    {
+        $purchaseOrder->load(['items.part', 'vendor', 'branch']);
+
+        $pdf = Pdf::loadView(pdf_view('purchase-order'), ['order' => $purchaseOrder]);
+
+        return $pdf->download('purchase-order-'.$purchaseOrder->po_no.'.pdf');
+    }
+
+    public function paymentReceiptPdf(PaymentReceipt $paymentReceipt): Response
+    {
+        $paymentReceipt->load(['customer', 'vendor', 'branch']);
+
+        $pdf = Pdf::loadView(pdf_view('payment-receipt'), ['receipt' => $paymentReceipt]);
+
+        return $pdf->download('receipt-'.$paymentReceipt->receipt_no.'.pdf');
+    }
+
+    public function payslipPdf(PayrollRun $payrollRun, PayrollItem $payrollItem): Response
+    {
+        abort_unless($payrollItem->payroll_run_id === $payrollRun->id, 404);
+
+        $payrollItem->load('employee.department');
+        $payrollRun->load('branch');
+
+        $pdf = Pdf::loadView(pdf_view('payslip'), [
+            'run' => $payrollRun,
+            'item' => $payrollItem,
+        ]);
+
+        $name = $payrollItem->employee?->employee_no ?? $payrollItem->id;
+
+        return $pdf->download('payslip-'.$payrollRun->payroll_no.'-'.$name.'.pdf');
     }
 
     public function partBarcode(Part $part): Response

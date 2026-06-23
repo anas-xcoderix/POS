@@ -50,7 +50,9 @@ return [
     'employees' => 'الموظفون',
     'departments' => 'الأقسام',
     'attendance' => 'الحضور',
+    'leave' => 'طلبات الإجازة',
     'payroll' => 'الرواتب',
+    'public_holidays' => 'العطلات الرسمية',
     'expiring_docs' => 'وثائق منتهية',
     'branches' => 'الفروع',
     'locations' => 'المواقع',
@@ -62,4 +64,8 @@ return [
     'users_roles' => 'المستخدمون والصلاحيات',
     'audit_logs' => 'سجل التدقيق',
     'sign_out' => 'تسجيل الخروج',
+    'transport_shipments' => 'الشحنات',
+    'transport_drivers' => 'سائقو النقل',
+    'transport_cash' => 'نقدية النقل',
+    'shipping_status' => 'حالة الشحن',
 ];

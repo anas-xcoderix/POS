@@ -1,4 +1,4 @@
-@props(['title' => '', 'createLabel' => null, 'columns' => [], 'records' => null, 'formFields' => '', 'resource' => '', 'search' => null, 'emptyTitle' => null, 'printUrl' => null])
+@props(['title' => '', 'createLabel' => null, 'columns' => [], 'records' => null, 'formFields' => '', 'resource' => '', 'search' => null, 'emptyTitle' => null, 'printUrl' => null, 'showRoute' => null])
 
 @php
     $title = $title ?: __('modules.records');
@@ -51,6 +51,11 @@
                             @endforeach
                             <td class="text-end">
                                 <div class="flex items-center justify-end gap-1">
+                                    @if($showRoute)
+                                        <a href="{{ route($showRoute, $record) }}" class="erp-btn-ghost !px-2.5 !py-2" title="{{ __('hr.view_employee') }}">
+                                            <x-ui.icon name="eye" class="h-4 w-4" />
+                                        </a>
+                                    @endif
                                     <button type="button" onclick="openEdit(@json($record))" class="erp-btn-ghost !px-2.5 !py-2" title="{{ __('ui.edit') }}">
                                         <x-ui.icon name="pencil" class="h-4 w-4" />
                                     </button>

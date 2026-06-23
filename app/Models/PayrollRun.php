@@ -11,11 +11,13 @@ class PayrollRun extends Model
     protected $fillable = [
         'payroll_no', 'branch_id', 'period_month', 'period_year',
         'status', 'total_amount', 'created_by', 'posted_at',
+        'payment_status', 'paid_at', 'payment_reference',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
         'posted_at' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     public function branch(): BelongsTo
@@ -36,5 +38,10 @@ class PayrollRun extends Model
     public function periodLabel(): string
     {
         return date('F Y', mktime(0, 0, 0, $this->period_month, 1, $this->period_year));
+    }
+
+    public function isEditable(): bool
+    {
+        return $this->status === 'draft';
     }
 }

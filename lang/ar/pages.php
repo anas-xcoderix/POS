@@ -120,6 +120,7 @@ return [
         'back_to_quotations' => 'العودة إلى عروض الأسعار',
         'back_to_job_cards' => 'العودة إلى بطاقات العمل',
         'back_to_delivery_notes' => 'العودة إلى إشعارات التسليم',
+        'back_to_purchase_orders' => 'العودة إلى أوامر الشراء',
         'back_to_counts' => 'العودة إلى الجرد',
         'back_to_parts' => 'العودة إلى القطع',
         'back_to_vehicles' => 'العودة إلى المركبات',

@@ -1,16 +1,16 @@
-@php $title = __('modules.finance_reports'); @endphp
+@php $title = __('finance.finance_reports'); @endphp
 <x-erp-layout>
 <div class="mb-4">
-    <a href="{{ route('reports.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-700">← All Reports Center (30 reports)</a>
+    <a href="{{ route('reports.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-700">← {{ __('nav.reports') }}</a>
 </div>
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
     @foreach([
-        ['Trial Balance', 'Account balances for a period', route('reports.show', 'trial-balance'), 'document'],
-        ['Income Statement', 'Revenue vs expenses (P&L)', route('reports.show', 'income-statement'), 'document'],
-        ['Balance Sheet', 'Assets, liabilities & equity', route('reports.show', 'balance-sheet'), 'building'],
-        ['Customer Aging', 'Outstanding receivables by age', route('reports.show', 'customer-aging'), 'users'],
-        ['Vendor Aging', 'Outstanding payables by age', route('reports.show', 'vendor-aging'), 'truck'],
-        ['Journal Entries', 'View all GL postings', route('journal-entries.index'), 'document'],
+        [__('finance.trial_balance'), __('finance.trial_balance'), route('finance.reports.trial-balance'), 'document'],
+        [__('finance.income_statement'), __('finance.income_statement'), route('finance.reports.income-statement'), 'document'],
+        [__('finance.balance_sheet'), __('finance.balance_sheet'), route('finance.reports.balance-sheet'), 'building'],
+        [__('finance.customer_aging'), __('finance.customer_aging'), route('finance.reports.customer-aging'), 'users'],
+        [__('finance.vendor_aging'), __('finance.vendor_aging'), route('finance.reports.vendor-aging'), 'truck'],
+        [__('nav.journal_entries'), __('nav.journal_entries'), route('journal-entries.index'), 'document'],
     ] as [$label, $desc, $url, $icon])
         <a href="{{ $url }}" class="erp-quick-link group">
             <div class="flex items-start gap-3 min-w-0">

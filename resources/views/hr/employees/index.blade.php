@@ -1,6 +1,7 @@
 @include('components.master-crud', [
     'title' => __('modules.employees'),
     'resource' => 'employees',
+    'showRoute' => 'employees.show',
     'createLabel' => __('modules.add_employee'),
     'columns' => [
         ['label' => __('ui.employee_no'), 'field' => 'employee_no'],

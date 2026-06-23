@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|noto-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
     @stack('scripts')
 </head>
 <body class="font-sans bg-gray-50 {{ $isRtl ? 'erp-rtl' : 'erp-ltr' }}" x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" @close-sidebar.window="sidebarOpen = false">
@@ -52,6 +53,10 @@
                 <x-ui.sidebar-link route="sales-invoices.index" icon="document" :label="__('nav.sales_invoices')" />
                 <x-ui.sidebar-link route="sale-returns.index" icon="document" :label="__('nav.sale_returns')" />
                 <x-ui.sidebar-link route="delivery-notes.index" icon="truck" :label="__('nav.delivery_notes')" />
+                <x-ui.sidebar-link route="transport.shipments.index" icon="truck" :label="__('nav.transport_shipments')" />
+                <x-ui.sidebar-link route="transport.shipping-status.index" icon="document" :label="__('nav.shipping_status')" />
+                <x-ui.sidebar-link route="transport.cash-vouchers.index" icon="document" :label="__('nav.transport_cash')" />
+                <x-ui.sidebar-link route="transport-drivers.index" icon="users" :label="__('nav.transport_drivers')" />
                 <x-ui.sidebar-link route="pick-tickets.index" icon="document" :label="__('nav.pick_tickets')" />
                 <x-ui.sidebar-link route="pos.index" icon="cart" :label="__('nav.pos')" />
                 <x-ui.sidebar-link route="customers.index" icon="users" :label="__('nav.customers')" />
@@ -101,7 +106,9 @@
                 <x-ui.sidebar-link route="employees.index" icon="users" :label="__('nav.employees')" />
                 <x-ui.sidebar-link route="departments.index" icon="building" :label="__('nav.departments')" />
                 <x-ui.sidebar-link route="attendance.index" icon="document" :label="__('nav.attendance')" />
+                <x-ui.sidebar-link route="leave.index" icon="document" :label="__('nav.leave')" />
                 <x-ui.sidebar-link route="payroll.index" icon="document" :label="__('nav.payroll')" />
+                <x-ui.sidebar-link route="public-holidays.index" icon="document" :label="__('nav.public_holidays')" />
                 <x-ui.sidebar-link route="hr.reports.expiring-documents" icon="document" :label="__('nav.expiring_docs')" />
             </div>
 

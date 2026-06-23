@@ -11,12 +11,12 @@ return [
             'settings', 'users', 'parts.import', 'finance', 'cheques', 'delivery-notes', 'vehicle-orders',
             'workshop', 'hr', 'reports',
             'proforma', 'pos', 'pick-tickets', 'cash-book', 'fixed-assets', 'currencies', 'audit-logs', 'stock-batches',
-            'showroom-vehicles',
+            'showroom-vehicles', 'transport',
         ],
         'sales' => [
             'dashboard', 'parts', 'stock', 'quotations', 'sales', 'sale-returns', 'delivery-notes',
             'customers', 'payments', 'reports',
-            'proforma', 'pos', 'pick-tickets', 'showroom-vehicles',
+            'proforma', 'pos', 'pick-tickets', 'showroom-vehicles', 'transport',
         ],
         'warehouse' => [
             'dashboard', 'parts', 'stock', 'stock-transfers', 'stock-counts', 'purchase-orders',
@@ -55,6 +55,10 @@ return [
         'gl_sales_revenue' => '4000',
         'gl_cogs' => '5000',
         'gl_retained_earnings' => '3100',
+        'gl_salary_expense' => '5110',
+        'gl_salaries_payable' => '2300',
+        'gosi_employee_rate' => '9.75',
+        'gosi_employer_rate' => '11.75',
     ],
 
     'gl_accounts' => [
@@ -67,6 +71,8 @@ return [
         'sales_revenue' => '4000',
         'cogs' => '5000',
         'retained_earnings' => '3100',
+        'salary_expense' => '5110',
+        'salaries_payable' => '2300',
     ],
 
 ];
